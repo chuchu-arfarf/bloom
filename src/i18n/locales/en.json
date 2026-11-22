@@ -252,7 +252,28 @@
 			"pausedEndsAt": "Paused · ends {{time}}",
 			"clickToSetDuration": "Click to set a duration",
 			"timerDurationAria": "Set timer duration",
-			"presetMinutes": "{{count}}m"
+			"presetMinutes": "{{count}}m",
+			"viewTimer": "Timer",
+			"viewToday": "Today",
+			"viewTasks": "Tasks",
+			"agendaToday": "Today",
+			"agendaTomorrow": "Tomorrow",
+			"agendaSetup": "Add your Google or Outlook calendar in Settings → Integrations → Calendars to see your events here.",
+			"openSettings": "Open Settings",
+			"agendaLoading": "Loading your calendar…",
+			"agendaError": "A calendar couldn't be loaded. Check its address in Settings → Integrations.",
+			"agendaNothing": "Nothing scheduled",
+			"allDay": "All day",
+			"untitled": "(No title)",
+			"taskPlaceholder": "Add a task",
+			"newTask": "New task",
+			"addTask": "Add task",
+			"noTasks": "No tasks yet. Type one above and press Enter.",
+			"deleteTask": "Delete task: {{task}}",
+			"clearDone": "Clear completed",
+			"startingNow": "Starting now",
+			"startsInMinutes_one": "Starts in {{count}} minute",
+			"startsInMinutes_other": "Starts in {{count}} minutes"
 		},
 		"commandCenter": {
 			"toggleHint": "Left-click to toggle, Right-click for Settings",
@@ -774,7 +795,15 @@
 		"calendars": "Calendars",
 		"calendarsDescription": "Bring your schedule into Bloom.",
 		"calendarPlanned": "Calendar connections are planned for a future update.",
-		"planned": "Planned"
+		"planned": "Planned",
+		"calendarAddresses": "Calendar addresses",
+		"calendarAddressesDesc": "Paste each calendar's secret iCal address, one per line. Read-only; refreshed every 15 minutes.",
+		"calendarHowGoogle": "Google Calendar: Settings → your calendar → Integrate calendar → Secret address in iCal format.",
+		"calendarHowOutlook": "Outlook: Settings → Calendar → Shared calendars → Publish a calendar → ICS link.",
+		"calendarReminders": "Meeting reminders",
+		"calendarRemindersDesc": "Show the next event in the Island 5 minutes before it starts",
+		"calendarPauseMusic": "Pause music when a meeting starts",
+		"calendarPauseMusicDesc": "Only for timed events, not all-day ones"
 	},
 	"claude": {
 		"tabs": {

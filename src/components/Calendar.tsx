@@ -18,11 +18,14 @@ export function calendarRows(month: Date, mondayFirst = false): number {
 export function Calendar({
 	month,
 	mondayFirst = false,
-	onMonthChange
+	onMonthChange,
+	busyDays
 }: {
 	month: Date;
 	mondayFirst?: boolean;
 	onMonthChange: (month: Date) => void;
+	/** Local day keys (YYYY-M-D) with events, marked with a dot. */
+	busyDays?: Set<string>;
 }) {
 	useTranslation();
 	const monthNames = Array.from({ length: 12 }, (_, month) =>
@@ -196,10 +199,11 @@ export function Calendar({
 				{Array.from({ length: totalDays }, (_, index) => {
 					const day = index + 1;
 					const isToday = isCurrentMonth && day === today.getDate();
+					const busy = busyDays?.has(`${year}-${monthIndex}-${day}`) ?? false;
 					return (
 						<div
 							key={day}
-							className={`calendar-day${isToday ? " today" : ""}`}
+							className={`calendar-day${isToday ? " today" : ""}${busy ? " busy" : ""}`}
 							aria-current={isToday ? "date" : undefined}
 						>
 							{day}

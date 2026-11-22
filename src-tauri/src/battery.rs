@@ -144,12 +144,12 @@ fn details_sync() -> BatteryDetails {
 /// COM) must be balanced by `CoUninitialize` on the same thread; a failed one
 /// (such as RPC_E_CHANGED_MODE) must not be. The command runs on pooled
 /// blocking threads, so an unbalanced call would accumulate across hovers.
-struct ComGuard {
+pub(crate) struct ComGuard {
     initialized: bool,
 }
 
 impl ComGuard {
-    fn new() -> Self {
+    pub(crate) fn new() -> Self {
         use windows::Win32::System::Com::{CoInitializeEx, COINIT_MULTITHREADED};
         Self {
             initialized: unsafe { CoInitializeEx(None, COINIT_MULTITHREADED) }.is_ok(),

@@ -4,6 +4,7 @@ mod agent_alerts;
 mod battery;
 mod bluetooth;
 mod buds;
+mod calendar;
 mod claude;
 mod claude_protocol;
 mod commands;
@@ -124,6 +125,7 @@ fn main() {
             agent_alerts::configure_agent_alert,
             agent_alerts::test_agent_alert,
             agent_alerts::agent_alerts_quiet,
+            calendar::calendar_fetch,
             claude::claude_state,
             claude::claude_cli_path,
             claude::claude_send,

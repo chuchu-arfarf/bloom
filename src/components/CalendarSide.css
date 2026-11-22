@@ -1,0 +1,272 @@
+.calendar-side {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	height: 100%;
+	min-height: 0;
+}
+
+.calendar-side-switch {
+	display: flex;
+	gap: 2px;
+	padding: 2px;
+	border-radius: 8px;
+	background: var(--bloom-group-bg, rgba(255, 255, 255, 0.06));
+}
+
+.calendar-side-switch button {
+	flex: 1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+	height: 22px;
+	border: 0;
+	border-radius: 6px;
+	background: transparent;
+	color: var(--bloom-text-muted, rgba(255, 255, 255, 0.6));
+	font: inherit;
+	font-size: 10px;
+	cursor: pointer;
+}
+
+.calendar-side-switch button.active {
+	background: var(--bloom-border, rgba(255, 255, 255, 0.12));
+	color: var(--bloom-text, white);
+	font-weight: 600;
+}
+
+.calendar-side-body {
+	flex: 1;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.agenda-list,
+.tasks-list {
+	max-height: 168px;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.agenda-list::-webkit-scrollbar,
+.tasks-list::-webkit-scrollbar {
+	width: 4px;
+}
+
+.agenda-list::-webkit-scrollbar-thumb,
+.tasks-list::-webkit-scrollbar-thumb {
+	background: var(--bloom-scrollbar-thumb, rgba(255, 255, 255, 0.15));
+	border-radius: 2px;
+}
+
+.agenda-day {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+}
+
+.agenda-day-label {
+	font-size: 9.5px;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: var(--bloom-text-muted, rgba(255, 255, 255, 0.6));
+}
+
+.agenda-item {
+	display: flex;
+	gap: 8px;
+	align-items: baseline;
+	font-size: 11px;
+	padding: 3px 6px;
+	border-radius: 6px;
+	border-left: 2px solid var(--bloom-accent, #0a84ff);
+	background: var(--bloom-group-bg, rgba(255, 255, 255, 0.04));
+}
+
+.agenda-item.current {
+	background: var(--bloom-border, rgba(255, 255, 255, 0.12));
+}
+
+.agenda-item.past {
+	opacity: 0.5;
+	border-left-color: transparent;
+}
+
+.agenda-time {
+	flex-shrink: 0;
+	min-width: 48px;
+	font-variant-numeric: tabular-nums;
+	color: var(--bloom-text-muted, rgba(255, 255, 255, 0.6));
+}
+
+.agenda-title {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.agenda-empty,
+.agenda-error,
+.agenda-setup p {
+	font-size: 11px;
+	color: var(--bloom-text-muted, rgba(255, 255, 255, 0.6));
+	line-height: 1.4;
+	margin: 0;
+}
+
+.agenda-error {
+	color: #f59e0b;
+}
+
+.agenda-setup {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	align-items: flex-start;
+}
+
+.agenda-setup button,
+.tasks-clear {
+	border: 1px solid var(--bloom-border, rgba(255, 255, 255, 0.12));
+	border-radius: 6px;
+	background: transparent;
+	color: var(--bloom-text, white);
+	font: inherit;
+	font-size: 10.5px;
+	padding: 4px 10px;
+	cursor: pointer;
+}
+
+.tasks {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	min-height: 0;
+}
+
+.tasks-input {
+	display: flex;
+	gap: 4px;
+}
+
+.tasks-input input {
+	flex: 1;
+	min-width: 0;
+	height: 24px;
+	padding: 0 8px;
+	border-radius: 6px;
+	border: 1px solid var(--bloom-border, rgba(255, 255, 255, 0.12));
+	background: var(--bloom-group-bg, rgba(255, 255, 255, 0.04));
+	color: var(--bloom-text, white);
+	font: inherit;
+	font-size: 11px;
+	outline: none;
+}
+
+.tasks-input input:focus {
+	border-color: var(--bloom-accent, #0a84ff);
+}
+
+.tasks-input button,
+.task-item button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	border: 0;
+	border-radius: 6px;
+	background: var(--bloom-group-bg, rgba(255, 255, 255, 0.06));
+	color: var(--bloom-text, white);
+	cursor: pointer;
+}
+
+.tasks-input button:disabled {
+	opacity: 0.4;
+	cursor: default;
+}
+
+.task-item {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 11px;
+}
+
+.task-item label {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	cursor: pointer;
+}
+
+.task-item label span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.task-item.done label span {
+	text-decoration: line-through;
+	color: var(--bloom-text-muted, rgba(255, 255, 255, 0.6));
+}
+
+.task-item button {
+	width: 18px;
+	height: 18px;
+	background: transparent;
+	color: var(--bloom-text-muted, rgba(255, 255, 255, 0.6));
+	opacity: 0;
+}
+
+.task-item:hover button,
+.task-item button:focus-visible {
+	opacity: 1;
+}
+
+.tasks-clear {
+	align-self: flex-start;
+}
+
+/* Days with events in the month grid */
+.calendar-day.busy {
+	position: relative;
+}
+
+.calendar-day.busy::after {
+	content: "";
+	position: absolute;
+	bottom: 3px;
+	left: 50%;
+	width: 3px;
+	height: 3px;
+	margin-left: -1.5px;
+	border-radius: 50%;
+	background: var(--bloom-accent, #0a84ff);
+}
+
+.calendar-day.today.busy::after {
+	background: var(--bloom-bg-expanded, black);
+}
+
+/* The timer shares its column with the view switch. */
+.calendar-side .timer-section-new {
+	gap: 12px;
+}
+
+/* Meeting reminder in the device-alert pill */
+.device-alert-meeting-icon {
+	width: 60px;
+	height: 60px;
+	flex-shrink: 0;
+	display: grid;
+	place-items: center;
+	color: var(--bloom-accent, #0a84ff);
+}

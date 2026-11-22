@@ -228,3 +228,33 @@
 .agent-setup-steps button:hover {
 	background: rgba(127, 127, 127, 0.18);
 }
+
+.calendar-urls {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding: 0 12px 12px 48px;
+}
+
+.calendar-urls textarea {
+	width: 100%;
+	box-sizing: border-box;
+	resize: vertical;
+	min-height: 64px;
+	padding: 8px;
+	border-radius: 8px;
+	border: 1px solid var(--bloom-border, rgba(255, 255, 255, 0.12));
+	background: var(--group-bg, rgba(255, 255, 255, 0.04));
+	color: var(--text-color, white);
+	font-family: "Cascadia Mono", Consolas, monospace;
+	font-size: 11px;
+	white-space: pre;
+	user-select: text;
+}
+
+.calendar-urls p {
+	margin: 0;
+	font-size: 11px;
+	color: var(--text-muted, rgba(255, 255, 255, 0.6));
+	line-height: 1.4;
+}

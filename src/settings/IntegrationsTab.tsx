@@ -1,6 +1,6 @@
-import { CalendarDays } from "lucide-react";
 import { AgentIntegrations } from "./AgentIntegrations";
 import { ClaudeSettings } from "./ClaudeSettings";
+import { CalendarSettings } from "./CalendarSettings";
 import { t, useTranslation } from "../i18n";
 import "./IntegrationsTab.css";
 
@@ -32,16 +32,7 @@ export function IntegrationsTab({ agentAlertsEnabled, onToggleAgentAlerts }: Int
 					<h2 id="calendar-integrations-title">{t("integrations.calendars")}</h2>
 					<p>{t("integrations.calendarsDescription")}</p>
 				</div>
-				<div className="setting-group">
-					<div className="integration-planned">
-						<CalendarDays size={22} strokeWidth={1.5} aria-hidden="true" />
-						<div>
-							<strong>Google Calendar</strong>
-							<p>{t("integrations.calendarPlanned")}</p>
-						</div>
-						<span className="integration-planned-badge">{t("integrations.planned")}</span>
-					</div>
-				</div>
+				<CalendarSettings />
 			</section>
 		</>
 	);

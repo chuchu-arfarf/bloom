@@ -35,6 +35,8 @@ windows = { version = "0.62", features = [
 	"Win32_UI_HiDpi",
 	"Win32_Foundation",
 	"Win32_System_Com",
+	"Win32_System_Com_Urlmon",
+	"Win32_Networking_WinInet",
 	"Win32_UI_Accessibility",
 	"Win32_System_Variant",
 	"Media_Control",

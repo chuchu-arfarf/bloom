@@ -231,3 +231,13 @@ with open(path, 'w') as f: json.dump(settings, f)
 | `bloom-claude-hotkey-enabled` | `"true"` / `"false"` | `"true"` | Register Ctrl+Alt+C to open or close the panel. Read at startup.                                               |
 
 The dock item `bloom-claude` opens the panel. It is pinned once automatically; unpin it like any other app.
+
+### Calendars and tasks (this fork)
+
+| Key                                | Type                 | Default  | Description                                                                                  |
+| ---------------------------------- | -------------------- | -------- | -------------------------------------------------------------------------------------------- |
+| `bloom-calendar-urls`              | text                 | _(none)_ | Secret iCal (.ics) addresses, one per line (Google Calendar, Outlook). Read-only.            |
+| `bloom-calendar-reminders`         | `"true"` / `"false"` | `"true"` | Show a timed event in the Island before it starts.                                           |
+| `bloom-calendar-reminder-minutes`  | number               | `"5"`    | How many minutes before an event the reminder appears.                                       |
+| `bloom-calendar-pause-music`       | `"true"` / `"false"` | `"true"` | Pause playing media when a timed event starts.                                               |
+| `bloom-tasks`                      | JSON                 | `"[]"`   | The Calendar view's task list: `[{ "id", "text", "done" }]`.                                 |

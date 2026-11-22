@@ -16,6 +16,7 @@
         "@tauri-apps/plugin-opener": "^2.7.3",
         "framer-motion": "^12.43.0",
         "i18next": "^27.1.5",
+        "ical.js": "^2.2.1",
         "lucide-react": "^1.75.0",
         "react": "^19.3.1",
         "react-dom": "^19.3.1",
@@ -362,6 +363,8 @@
     "html-parse-stringify": ["html-parse-stringify@4.0.1", "", {}, "sha512-0zHsZJrK7S3K2aucXWL6ycoYJ/iNtIcFHC/nYQgFklPtrv5LpJctIiSCroWZWeuoXvuyFdzp6KzjJQ+OT5MfFw=="],
 
     "i18next": ["i18next@27.1.5", "", { "peerDependencies": { "typescript": "^5 || ^6 || ^7" }, "optionalPeers": ["typescript"] }, "sha512-KLrH2SWYWiI8Rx+ZbJ4+fdl5Ny2i8V9bJ6TkJ5YFrSyHgeUIGxoueQTZaafcHZcr1ENFqBicpu7ofr3SCSYDgA=="],
+
+    "ical.js": ["ical.js@2.2.1", "", {}, "sha512-yK/UlPbEs316igb/tjRgbFA8ZV75rCsBJp/hWOatpyaPNlgw0dGDmU+FoicOcwX4xXkeXOkYiOmCqNPFpNPkQg=="],
 
     "import-fresh": ["import-fresh@3.3.1", "", { "dependencies": { "parent-module": "^1.0.0", "resolve-from": "^4.0.0" } }, "sha512-TR3KfrTZTYLPB6jUjfx6MF9WcWrHL9su5TObK4ZkYgBdWKPOFoSoQIdEuTuR82pmtxH2spWG9h6etwfr1pLBqQ=="],
 

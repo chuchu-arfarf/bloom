@@ -28,6 +28,7 @@
     "@tauri-apps/plugin-opener": "^2.7.3",
     "framer-motion": "^12.43.0",
     "i18next": "^27.1.5",
+    "ical.js": "^2.2.1",
     "lucide-react": "^1.75.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",

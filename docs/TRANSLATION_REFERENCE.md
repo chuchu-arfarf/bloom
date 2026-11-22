@@ -329,6 +329,27 @@ This page is generated from the [current English catalog](../src/i18n/locales/en
 | `notch.calendar.clickToSetDuration` | Click to set a duration |
 | `notch.calendar.timerDurationAria` | Set timer duration |
 | `notch.calendar.presetMinutes` | {{count}}m |
+| `notch.calendar.viewTimer` | Timer |
+| `notch.calendar.viewToday` | Today |
+| `notch.calendar.viewTasks` | Tasks |
+| `notch.calendar.agendaToday` | Today |
+| `notch.calendar.agendaTomorrow` | Tomorrow |
+| `notch.calendar.agendaSetup` | Add your Google or Outlook calendar in Settings → Integrations → Calendars to see your events here. |
+| `notch.calendar.openSettings` | Open Settings |
+| `notch.calendar.agendaLoading` | Loading your calendar… |
+| `notch.calendar.agendaError` | A calendar couldn't be loaded. Check its address in Settings → Integrations. |
+| `notch.calendar.agendaNothing` | Nothing scheduled |
+| `notch.calendar.allDay` | All day |
+| `notch.calendar.untitled` | (No title) |
+| `notch.calendar.taskPlaceholder` | Add a task |
+| `notch.calendar.newTask` | New task |
+| `notch.calendar.addTask` | Add task |
+| `notch.calendar.noTasks` | No tasks yet. Type one above and press Enter. |
+| `notch.calendar.deleteTask` | Delete task: {{task}} |
+| `notch.calendar.clearDone` | Clear completed |
+| `notch.calendar.startingNow` | Starting now |
+| `notch.calendar.startsInMinutes_one` | Starts in {{count}} minute |
+| `notch.calendar.startsInMinutes_other` | Starts in {{count}} minutes |
 
 ## Notch → Command Center
 
@@ -940,6 +961,14 @@ This page is generated from the [current English catalog](../src/i18n/locales/en
 | `integrations.calendarsDescription` | Bring your schedule into Bloom. |
 | `integrations.calendarPlanned` | Calendar connections are planned for a future update. |
 | `integrations.planned` | Planned |
+| `integrations.calendarAddresses` | Calendar addresses |
+| `integrations.calendarAddressesDesc` | Paste each calendar's secret iCal address, one per line. Read-only; refreshed every 15 minutes. |
+| `integrations.calendarHowGoogle` | Google Calendar: Settings → your calendar → Integrate calendar → Secret address in iCal format. |
+| `integrations.calendarHowOutlook` | Outlook: Settings → Calendar → Shared calendars → Publish a calendar → ICS link. |
+| `integrations.calendarReminders` | Meeting reminders |
+| `integrations.calendarRemindersDesc` | Show the next event in the Island 5 minutes before it starts |
+| `integrations.calendarPauseMusic` | Pause music when a meeting starts |
+| `integrations.calendarPauseMusicDesc` | Only for timed events, not all-day ones |
 
 ## Claude → Tabs
 

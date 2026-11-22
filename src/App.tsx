@@ -34,6 +34,9 @@ import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { startDrag } from "@crabnebula/tauri-plugin-drag";
 import type { WidgetConfig } from "./components/StatusWidgetConfig";
 import { fiveHour, type UsageInfo } from "./claude/types";
+import { CalendarSide } from "./components/CalendarSide";
+import { useCalendarEvents } from "./hooks/useCalendarEvents";
+import { busyDays } from "./calendar/events";
 import { resetTime } from "./claude/words";
 import { EdgeSurface } from "./components/EdgeSurface";
 import { ShelfTypeIcon } from "./components/ShelfTypeIcon";
@@ -72,7 +75,8 @@ import {
 	SunDim,
 	SunMedium,
 	Sun,
-	Sparkles
+	Sparkles,
+	CalendarClock
 } from "lucide-react";
 
 /**
@@ -472,6 +476,10 @@ interface DeviceAlert {
 	usb?: boolean;
 	// Changes on every alert, so the drawing replays its animation.
 	runId: number;
+	// A calendar reminder instead of a device: the line under the event title.
+	meeting?: string;
+	// How long to show it, when not the device default.
+	duration?: number;
 }
 
 // As sent by the backend's `bluetooth-connection` event.
@@ -753,6 +761,10 @@ function App() {
 		left: ["weather"],
 		right: ["claude", "battery"]
 	});
+
+	// Events from the user's iCal calendars (Settings → Integrations → Calendars).
+	const calendar = useCalendarEvents();
+	const calendarBusyDays = useMemo(() => busyDays(calendar.events), [calendar.events]);
 
 	// Claude plan usage, checked by the backend every few minutes (src-tauri/src/claude.rs).
 	const [claudeUsage, setClaudeUsage] = useState<UsageInfo | null>(null);
@@ -2301,7 +2313,8 @@ function App() {
 	const deviceAlertQueueRef = useRef<Omit<DeviceAlert, "runId">[]>([]);
 	const presentDeviceAlertRef = useRef<(alert: Omit<DeviceAlert, "runId">) => void>(() => {});
 	presentDeviceAlertRef.current = (alert) => {
-		const duration = alert.connected ? DEVICE_ALERT_MS.connected : DEVICE_ALERT_MS.disconnected;
+		const duration =
+			alert.duration ?? (alert.connected ? DEVICE_ALERT_MS.connected : DEVICE_ALERT_MS.disconnected);
 		setDeviceAlert({ ...alert, runId: Date.now() });
 		setDeviceAlertOnScreen(true);
 		setBloomMode("device");
@@ -2437,6 +2450,54 @@ function App() {
 				alert && alert.id === id && alert.connected ? { ...alert, battery } : alert
 			);
 	}, [showDeviceAlert]);
+
+	// Calendar automations: a reminder in the pill shortly before each timed
+	// event, and pausing music when one starts. Both can be turned off in
+	// Settings → Integrations → Calendars.
+	const remindedRef = useRef(new Set<string>());
+	const pausedForRef = useRef(new Set<string>());
+	const isPlayingRef = useRef(isPlaying);
+	isPlayingRef.current = isPlaying;
+	useEffect(() => {
+		if (windowLabel !== "main" || calendar.events.length === 0) return;
+		const check = () => {
+			const now = Date.now();
+			const remind = localStorage.getItem("bloom-calendar-reminders") !== "false";
+			const pauseMusic = localStorage.getItem("bloom-calendar-pause-music") !== "false";
+			const lead = Math.max(1, Number(localStorage.getItem("bloom-calendar-reminder-minutes")) || 5) * 60_000;
+			for (const event of calendar.events) {
+				if (event.allDay || event.start < now - 60_000 || event.start > now + lead) continue;
+				if (remind && !remindedRef.current.has(event.id)) {
+					remindedRef.current.add(event.id);
+					const minutes = Math.max(0, Math.round((event.start - now) / 60_000));
+					showDeviceAlert({
+						id: `meeting:${event.id}`,
+						art: "headphones-wired",
+						name: event.title || t("notch.calendar.untitled"),
+						connected: true,
+						battery: null,
+						meeting:
+							minutes <= 0
+								? t("notch.calendar.startingNow")
+								: tCount("notch.calendar.startsInMinutes", minutes),
+						duration: 8000
+					});
+				}
+				if (
+					pauseMusic &&
+					event.start <= now + 30_000 &&
+					!pausedForRef.current.has(event.id) &&
+					isPlayingRef.current
+				) {
+					pausedForRef.current.add(event.id);
+					invoke("media_play_pause").catch(console.error);
+				}
+			}
+		};
+		check();
+		const timer = setInterval(check, 30_000);
+		return () => clearInterval(timer);
+	}, [windowLabel, calendar.events, showDeviceAlert]);
 
 	// The clock row normally returns when the alert's exit animation ends.
 	// If the alert never rendered (the notch was still starting up), there's
@@ -3213,9 +3274,10 @@ function App() {
 		}
 		// Device alert: the drawing, with room for its motion.
 		if (bloomMode === "device" && deviceAlert) return 76;
-		// Sized to the calendar's week-row count plus the timer's fixed content.
+		// Sized to the calendar's week-row count plus the timer's fixed content,
+		// and the Timer / Today / Tasks switch above it.
 		if (bloomMode === "calendar")
-			return 112 + calendarRows(calendarMonth, calendarMondayFirst) * 30;
+			return 136 + calendarRows(calendarMonth, calendarMondayFirst) * 30;
 		// Shelf expands on mode alone (no hover needed: there is no cursor
 		// hover during an OS drag) and is sized to exactly one row of tiles,
 		// plus room for the scrollbar once the tiles overflow it.
@@ -4367,8 +4429,17 @@ function App() {
 											onClick={(e) => {
 												e.stopPropagation();
 												const usb = deviceAlert.usb;
+												const meeting = deviceAlert.meeting !== undefined;
 												deviceAlertQueueRef.current = [];
 												setDeviceAlert(null);
+												// A meeting reminder opens the calendar.
+												if (meeting) {
+													if (settingsCalendarEnabled) {
+														setIsOpen(true);
+														setBloomMode("calendar");
+													}
+													return;
+												}
 												// Bluetooth devices open their list; USB ones
 												// have none, so the click just dismisses.
 												if (usb) return;
@@ -4380,23 +4451,30 @@ function App() {
 											exit={{ opacity: 0, filter: "blur(4px)", transition: { duration: 0.12 } }}
 											transition={{ duration: 0.2 }}
 										>
-											<DeviceArt
-												art={deviceAlert.art}
-												phase={deviceAlert.connected ? "play" : "leave"}
-												runId={deviceAlert.runId}
-												size={60}
-											/>
+											{deviceAlert.meeting !== undefined ? (
+												<div className="device-alert-meeting-icon" aria-hidden="true">
+													<CalendarClock size={30} strokeWidth={1.6} />
+												</div>
+											) : (
+												<DeviceArt
+													art={deviceAlert.art}
+													phase={deviceAlert.connected ? "play" : "leave"}
+													runId={deviceAlert.runId}
+													size={60}
+												/>
+											)}
 											<div className="device-alert-text">
 												<span className="device-alert-name">{deviceAlert.name}</span>
 												<span className="device-alert-status">
-													{deviceAlertStatus(
-														deviceAlert.art,
-														deviceAlert.connected,
-														deviceAlert.usb
-													)}
+													{deviceAlert.meeting ??
+														deviceAlertStatus(
+															deviceAlert.art,
+															deviceAlert.connected,
+															deviceAlert.usb
+														)}
 												</span>
 											</div>
-											{deviceAlert.connected && deviceAlert.buds ? (
+											{deviceAlert.meeting !== undefined ? null : deviceAlert.connected && deviceAlert.buds ? (
 												<DeviceBudsBattery buds={deviceAlert.buds} />
 											) : (
 												deviceAlert.connected &&
@@ -4469,10 +4547,16 @@ function App() {
 													mondayFirst={calendarMondayFirst}
 													month={calendarMonth}
 													onMonthChange={setCalendarMonth}
+													busyDays={calendarBusyDays}
 												/>
 											</div>
 
 											<div className="timer-column">
+												<CalendarSide
+													events={calendar.events}
+													configured={calendar.configured}
+													status={calendar.status}
+													timer={
 												<div className={`timer-section-new state-${timerState}`}>
 													<div className="timer-main">
 														<div className="timer-status">
@@ -4577,6 +4661,8 @@ function App() {
 														))}
 													</div>
 												</div>
+													}
+												/>
 											</div>
 										</motion.div>
 									)}
