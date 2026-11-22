@@ -41,7 +41,7 @@ fn decode(bytes: &[u8]) -> String {
 fn download(url: &str) -> CalendarFeed {
     use windows::core::{IUnknown, HSTRING, PCWSTR};
     use windows::Win32::Networking::WinInet::DeleteUrlCacheEntryW;
-    use windows::Win32::System::Com::Urlmon::{IBindStatusCallback, URLDownloadToFileW};
+    use windows::Win32::System::Com::{IBindStatusCallback, Urlmon::URLDownloadToFileW};
 
     let Some(url) = normalize_url(url) else {
         return CalendarFeed {
