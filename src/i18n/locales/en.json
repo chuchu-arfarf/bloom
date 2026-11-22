@@ -139,7 +139,8 @@
 			"cpu": "CPU",
 			"ram": "RAM",
 			"disk": "Disk",
-			"net": "Net"
+			"net": "Net",
+			"claude": "Claude usage"
 		},
 		"overlays": {
 			"volume": "Volume HUD",
@@ -229,7 +230,9 @@
 			"updateAvailable": "Update Available",
 			"lowBattery": "Low Battery",
 			"charging": "Charging",
-			"onBattery": "On Battery"
+			"onBattery": "On Battery",
+			"claudeUsage": "Claude usage: {{percent}}% of the current 5-hour session",
+			"claudeUsageResets": "Claude usage: {{percent}}% of the current 5-hour session, resets {{time}}"
 		},
 		"music": {
 			"artAlt": "Art",
@@ -772,5 +775,95 @@
 		"calendarsDescription": "Bring your schedule into Bloom.",
 		"calendarPlanned": "Calendar connections are planned for a future update.",
 		"planned": "Planned"
+	},
+	"claude": {
+		"tabs": {
+			"chat": "Chat",
+			"code": "Code"
+		},
+		"chat": {
+			"empty": "Ask anything. Claude can search the web when it needs to, but can't see your files.",
+			"placeholder": "Ask Claude…",
+			"footer": "Enter to send · Shift+Enter for a new line"
+		},
+		"code": {
+			"chooseFolder": "Choose a project folder",
+			"chooseFolderTitle": "Choose the project folder for Claude Code",
+			"change": "Change",
+			"emptyNoFolder": "Pick a project folder, then tell Claude Code what to build or fix. It asks before changing files or running commands.",
+			"emptyWithFolder": "Tell Claude Code what to do in {{folder}}. It asks before changing files or running commands.",
+			"placeholder": "Tell Claude Code what to do…",
+			"footer": "Asks before editing files or running commands"
+		},
+		"tool": {
+			"run": "Run {{target}}",
+			"edit": "Edit {{target}}",
+			"write": "Create {{target}}",
+			"read": "Read {{target}}",
+			"findFiles": "Find files: {{target}}",
+			"search": "Search: {{target}}",
+			"openPage": "Open {{target}}",
+			"webSearch": "Search the web: {{target}}",
+			"helper": "Start a helper: {{target}}",
+			"other": "{{tool}}: {{target}}"
+		},
+		"decision": {
+			"allowed": "Allowed: {{action}}",
+			"denied": "Denied: {{action}}"
+		},
+		"approval": {
+			"title": "Allow this?",
+			"allow": "Allow",
+			"allowAlways": "Allow for this conversation",
+			"deny": "Deny"
+		},
+		"status": {
+			"thinking": "Claude is thinking…",
+			"working": "Claude Code is working…"
+		},
+		"actions": {
+			"newConversation": "New conversation",
+			"close": "Close",
+			"stop": "Stop",
+			"send": "Send"
+		},
+		"input": {
+			"label": "Message to Claude"
+		},
+		"errors": {
+			"notInstalled": "Claude Code isn't installed or wasn't found. Install it, run \"claude\" once in a terminal to sign in, then try again. You can also point Bloom to claude.exe in Settings → Claude.",
+			"noFolder": "Choose a project folder first.",
+			"maxTurns": "Claude stopped after reaching its turn limit.",
+			"stopped": "Claude Code stopped unexpectedly.",
+			"failed": "Something went wrong."
+		},
+		"usage": {
+			"fiveHour": "Current session (5 hours)",
+			"weekly": "Weekly, all models",
+			"weeklyModel": "Weekly, {{model}}",
+			"percent": "{{percent}}%",
+			"resets": "resets {{time}}",
+			"line": "{{label}}: {{percent}}%"
+		},
+		"settings": {
+			"title": "Claude panel",
+			"description": "Chat with Claude, or let Claude Code work in a project folder, from the dock or with Ctrl+Alt+C. It uses Claude Code on this PC, signed in with your own Claude plan.",
+			"openPanel": "Open the Claude panel",
+			"openPanelDesc": "Also from the Claude icon in the dock, or Ctrl+Alt+C",
+			"location": "Claude Code",
+			"notFound": "Not found. Install Claude Code and run \"claude\" once to sign in, or click to choose claude.exe",
+			"chooseExeTitle": "Choose claude.exe",
+			"findAutomatically": "Find Claude Code automatically",
+			"findAutomaticallyDesc": "Forget a chosen claude.exe and look in the usual places",
+			"model": "Model",
+			"modelDesc": "Used for new conversations",
+			"modelDefault": "Claude Code default",
+			"usage": "Usage in the Island",
+			"usageDesc": "Checks your plan's limits every 5 minutes. Add the Claude usage widget in Notch → Widgets",
+			"hotkey": "Ctrl+Alt+C opens the panel",
+			"hotkeyDesc": "Takes effect after restarting Bloom",
+			"folder": "Code project folder",
+			"folderNone": "None yet. Choose one in the panel's Code tab"
+		}
 	}
 }

@@ -33,6 +33,8 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { startDrag } from "@crabnebula/tauri-plugin-drag";
 import type { WidgetConfig } from "./components/StatusWidgetConfig";
+import { fiveHour, type UsageInfo } from "./claude/types";
+import { resetTime } from "./claude/words";
 import { EdgeSurface } from "./components/EdgeSurface";
 import { ShelfTypeIcon } from "./components/ShelfTypeIcon";
 import { WifiPanel } from "./components/WifiPanel";
@@ -69,7 +71,8 @@ import {
 	Volume2,
 	SunDim,
 	SunMedium,
-	Sun
+	Sun,
+	Sparkles
 } from "lucide-react";
 
 /**
@@ -748,8 +751,20 @@ function App() {
 	const [netDownSpeed, setNetDownSpeed] = useState(0);
 	const [statusWidgets, setStatusWidgets] = useState<WidgetConfig>({
 		left: ["weather"],
-		right: ["battery"]
+		right: ["claude", "battery"]
 	});
+
+	// Claude plan usage, checked by the backend every few minutes (src-tauri/src/claude.rs).
+	const [claudeUsage, setClaudeUsage] = useState<UsageInfo | null>(null);
+	useEffect(() => {
+		invoke<UsageInfo | null>("claude_usage", { refresh: false })
+			.then(setClaudeUsage)
+			.catch(() => {});
+		const unlisten = listen<UsageInfo>("claude-usage", (e) => setClaudeUsage(e.payload));
+		return () => {
+			unlisten.then((f) => f());
+		};
+	}, []);
 
 	const [windowLabel, setWindowLabel] = useState<string>("");
 	useEffect(() => {
@@ -3104,6 +3119,22 @@ function App() {
 						<span className="label">{diskSpace}GB</span>
 					</>
 				);
+			case "claude": {
+				const five = fiveHour(claudeUsage);
+				if (!five) return null;
+				const percent = Math.round(five.percent);
+				const resets = resetTime(five.resets_at);
+				return statusWidget(
+					"claude",
+					resets
+						? t("notch.status.claudeUsageResets", { percent, time: resets })
+						: t("notch.status.claudeUsage", { percent }),
+					<>
+						<Sparkles size={12} strokeWidth={2} style={percent >= 85 ? { color: "#f59e0b" } : undefined} />
+						<span className="label">{t("claude.usage.percent", { percent })}</span>
+					</>
+				);
+			}
 			case "net":
 				return statusWidget(
 					"net",
@@ -4304,11 +4335,22 @@ function App() {
 
 								<AnimatePresence onExitComplete={() => setAgentAlertOnScreen(agentAlertRef.current !== null)}>
 									{agentAlert && (
-										<AgentAlert
+										<div
 											key={`${agentAlert.agent}:${agentAlert.session}`}
-											alert={agentAlert}
-											onWidthChange={setAgentActivityFitWidth}
-										/>
+											// display: contents keeps the alert's own layout untouched.
+											style={{ display: "contents", cursor: agentAlert.session === "bloom-panel" ? "pointer" : undefined }}
+											onClick={
+												// Sessions run from Bloom's Claude panel open the panel on click.
+												agentAlert.session === "bloom-panel"
+													? (e) => {
+															e.stopPropagation();
+															invoke("open_claude_window", { tab: "code" }).catch(console.error);
+														}
+													: undefined
+											}
+										>
+											<AgentAlert alert={agentAlert} onWidthChange={setAgentActivityFitWidth} />
+										</div>
 									)}
 								</AnimatePresence>
 

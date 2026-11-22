@@ -219,3 +219,15 @@ with open(path, 'w') as f: json.dump(settings, f)
 - Changing `bloom-scale` triggers AppBar re-registration to adjust reserved screen space.
 - Settings → General → Reset to Defaults removes every `bloom-` key from `settings.json` and `localStorage` (except the `bloom-first-run` / `bloom-app-version` lifecycle sentinels), then restarts Bloom. Pinned apps (`pinned_apps.json`) and uploaded icons (`custom_icons/`) are preserved.
 - Theme changes (`bloom-theme-*`) are applied by reading all theme values from `localStorage` and calling `applyTheme()` — the theme system depends on all five theme keys being in sync.
+
+### Claude panel (this fork)
+
+| Key                           | Type                 | Default  | Description                                                                                                    |
+| ----------------------------- | -------------------- | -------- | -------------------------------------------------------------------------------------------------------------- |
+| `bloom-claude-path`           | path                 | _(auto)_ | Full path to `claude.exe`. Unset to look in the usual install locations and `PATH`.                            |
+| `bloom-claude-model`          | string               | _(none)_ | Model alias passed to Claude Code (`sonnet`, `opus`, `haiku`). Unset uses Claude Code's default.               |
+| `bloom-claude-folder`         | path                 | _(none)_ | Project folder for the panel's Code tab.                                                                       |
+| `bloom-claude-usage-enabled`  | `"true"` / `"false"` | `"true"` | Check the Claude plan's usage every 5 minutes for the Island's `claude` status widget and the panel.           |
+| `bloom-claude-hotkey-enabled` | `"true"` / `"false"` | `"true"` | Register Ctrl+Alt+C to open or close the panel. Read at startup.                                               |
+
+The dock item `bloom-claude` opens the panel. It is pinned once automatically; unpin it like any other app.

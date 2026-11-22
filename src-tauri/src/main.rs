@@ -4,6 +4,8 @@ mod agent_alerts;
 mod battery;
 mod bluetooth;
 mod buds;
+mod claude;
+mod claude_protocol;
 mod commands;
 mod diagnostics;
 mod dock_extras;
@@ -122,6 +124,16 @@ fn main() {
             agent_alerts::configure_agent_alert,
             agent_alerts::test_agent_alert,
             agent_alerts::agent_alerts_quiet,
+            claude::claude_state,
+            claude::claude_cli_path,
+            claude::claude_send,
+            claude::claude_answer,
+            claude::claude_interrupt,
+            claude::claude_new,
+            claude::claude_set_folder,
+            claude::claude_usage,
+            claude::open_claude_window,
+            claude::hide_claude_window,
             hide_native_osd,
             open_settings_window,
             close_settings_window,
@@ -248,6 +260,7 @@ fn main() {
             // rest of this hook runs.
             crate::utils::init_settings_cache(app.handle());
             agent_alerts::setup(app.handle());
+            claude::setup(app.handle());
             // Crash-recovery: if a previous session was force-killed while the native
             // taskbar was hidden, restore it now. Runs before the frontend re-hides it
             // (init_dock fires after a delay), so the flag must be removed first.
@@ -490,6 +503,7 @@ fn main() {
         .expect("error while building tauri application");
     app.run(|_, event| {
         if let tauri::RunEvent::Exit = event {
+            claude::shutdown();
             diagnostics::record("exit", "restoring native taskbar");
             set_taskbar_visibility(true, true);
             NATIVE_TASKBAR_HIDDEN.store(false, Ordering::Relaxed);

@@ -28,7 +28,8 @@ import {
 	X,
 	ArrowLeftRight,
 	ChevronUp,
-	ChevronDown
+	ChevronDown,
+	Sparkles
 } from "lucide-react";
 import type { ComponentType, SVGProps } from "react";
 import { t, useTranslation } from "../i18n";
@@ -51,12 +52,13 @@ const WIDGET_DEFS: WidgetDef[] = [
 	{ id: "cpu", labelKey: "settings.widgets.cpu", icon: Cpu, color: "#f97316" },
 	{ id: "ram", labelKey: "settings.widgets.ram", icon: MemoryStick, color: "#a78bfa" },
 	{ id: "disk", labelKey: "settings.widgets.disk", icon: HardDrive, color: "#38bdf8" },
-	{ id: "net", labelKey: "settings.widgets.net", icon: ArrowUpDown, color: "#2dd4bf" }
+	{ id: "net", labelKey: "settings.widgets.net", icon: ArrowUpDown, color: "#2dd4bf" },
+	{ id: "claude", labelKey: "settings.widgets.claude", icon: Sparkles, color: "#f5b26b" }
 ];
 
 const DEFAULT_CONFIG: WidgetConfig = {
 	left: ["weather"],
-	right: ["battery"]
+	right: ["claude", "battery"]
 };
 
 const MAX_PER_ZONE = 2;

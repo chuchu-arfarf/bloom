@@ -1,5 +1,6 @@
 import { CalendarDays } from "lucide-react";
 import { AgentIntegrations } from "./AgentIntegrations";
+import { ClaudeSettings } from "./ClaudeSettings";
 import { t, useTranslation } from "../i18n";
 import "./IntegrationsTab.css";
 
@@ -12,6 +13,13 @@ export function IntegrationsTab({ agentAlertsEnabled, onToggleAgentAlerts }: Int
 	useTranslation();
 	return (
 		<>
+			<section className="integration-category" aria-labelledby="claude-panel-title">
+				<div className="integration-category-heading">
+					<h2 id="claude-panel-title">{t("claude.settings.title")}</h2>
+					<p>{t("claude.settings.description")}</p>
+				</div>
+				<ClaudeSettings />
+			</section>
 			<section className="integration-category" aria-labelledby="agent-integrations-title">
 				<div className="integration-category-heading">
 					<h2 id="agent-integrations-title">{t("integrations.agents")}</h2>

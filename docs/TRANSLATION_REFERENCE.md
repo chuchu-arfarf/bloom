@@ -184,6 +184,7 @@ This page is generated from the [current English catalog](../src/i18n/locales/en
 | `settings.widgets.ram` | RAM |
 | `settings.widgets.disk` | Disk |
 | `settings.widgets.net` | Net |
+| `settings.widgets.claude` | Claude usage |
 
 ## Settings → Overlays
 
@@ -300,6 +301,8 @@ This page is generated from the [current English catalog](../src/i18n/locales/en
 | `notch.status.lowBattery` | Low Battery |
 | `notch.status.charging` | Charging |
 | `notch.status.onBattery` | On Battery |
+| `notch.status.claudeUsage` | Claude usage: {{percent}}% of the current 5-hour session |
+| `notch.status.claudeUsageResets` | Claude usage: {{percent}}% of the current 5-hour session, resets {{time}} |
 
 ## Notch → Music controls
 
@@ -937,3 +940,127 @@ This page is generated from the [current English catalog](../src/i18n/locales/en
 | `integrations.calendarsDescription` | Bring your schedule into Bloom. |
 | `integrations.calendarPlanned` | Calendar connections are planned for a future update. |
 | `integrations.planned` | Planned |
+
+## Claude → Tabs
+
+| Reference key | English text |
+| --- | --- |
+| `claude.tabs.chat` | Chat |
+| `claude.tabs.code` | Code |
+
+## Claude → Chat
+
+| Reference key | English text |
+| --- | --- |
+| `claude.chat.empty` | Ask anything. Claude can search the web when it needs to, but can't see your files. |
+| `claude.chat.placeholder` | Ask Claude… |
+| `claude.chat.footer` | Enter to send · Shift+Enter for a new line |
+
+## Claude → Code
+
+| Reference key | English text |
+| --- | --- |
+| `claude.code.chooseFolder` | Choose a project folder |
+| `claude.code.chooseFolderTitle` | Choose the project folder for Claude Code |
+| `claude.code.change` | Change |
+| `claude.code.emptyNoFolder` | Pick a project folder, then tell Claude Code what to build or fix. It asks before changing files or running commands. |
+| `claude.code.emptyWithFolder` | Tell Claude Code what to do in {{folder}}. It asks before changing files or running commands. |
+| `claude.code.placeholder` | Tell Claude Code what to do… |
+| `claude.code.footer` | Asks before editing files or running commands |
+
+## Claude → Tool
+
+| Reference key | English text |
+| --- | --- |
+| `claude.tool.run` | Run {{target}} |
+| `claude.tool.edit` | Edit {{target}} |
+| `claude.tool.write` | Create {{target}} |
+| `claude.tool.read` | Read {{target}} |
+| `claude.tool.findFiles` | Find files: {{target}} |
+| `claude.tool.search` | Search: {{target}} |
+| `claude.tool.openPage` | Open {{target}} |
+| `claude.tool.webSearch` | Search the web: {{target}} |
+| `claude.tool.helper` | Start a helper: {{target}} |
+| `claude.tool.other` | {{tool}}: {{target}} |
+
+## Claude → Decision
+
+| Reference key | English text |
+| --- | --- |
+| `claude.decision.allowed` | Allowed: {{action}} |
+| `claude.decision.denied` | Denied: {{action}} |
+
+## Claude → Approval
+
+| Reference key | English text |
+| --- | --- |
+| `claude.approval.title` | Allow this? |
+| `claude.approval.allow` | Allow |
+| `claude.approval.allowAlways` | Allow for this conversation |
+| `claude.approval.deny` | Deny |
+
+## Claude → Status
+
+| Reference key | English text |
+| --- | --- |
+| `claude.status.thinking` | Claude is thinking… |
+| `claude.status.working` | Claude Code is working… |
+
+## Claude → Actions
+
+| Reference key | English text |
+| --- | --- |
+| `claude.actions.newConversation` | New conversation |
+| `claude.actions.close` | Close |
+| `claude.actions.stop` | Stop |
+| `claude.actions.send` | Send |
+
+## Claude → Input
+
+| Reference key | English text |
+| --- | --- |
+| `claude.input.label` | Message to Claude |
+
+## Claude → Errors
+
+| Reference key | English text |
+| --- | --- |
+| `claude.errors.notInstalled` | Claude Code isn't installed or wasn't found. Install it, run "claude" once in a terminal to sign in, then try again. You can also point Bloom to claude.exe in Settings → Claude. |
+| `claude.errors.noFolder` | Choose a project folder first. |
+| `claude.errors.maxTurns` | Claude stopped after reaching its turn limit. |
+| `claude.errors.stopped` | Claude Code stopped unexpectedly. |
+| `claude.errors.failed` | Something went wrong. |
+
+## Claude → Usage
+
+| Reference key | English text |
+| --- | --- |
+| `claude.usage.fiveHour` | Current session (5 hours) |
+| `claude.usage.weekly` | Weekly, all models |
+| `claude.usage.weeklyModel` | Weekly, {{model}} |
+| `claude.usage.percent` | {{percent}}% |
+| `claude.usage.resets` | resets {{time}} |
+| `claude.usage.line` | {{label}}: {{percent}}% |
+
+## Claude → Settings
+
+| Reference key | English text |
+| --- | --- |
+| `claude.settings.title` | Claude panel |
+| `claude.settings.description` | Chat with Claude, or let Claude Code work in a project folder, from the dock or with Ctrl+Alt+C. It uses Claude Code on this PC, signed in with your own Claude plan. |
+| `claude.settings.openPanel` | Open the Claude panel |
+| `claude.settings.openPanelDesc` | Also from the Claude icon in the dock, or Ctrl+Alt+C |
+| `claude.settings.location` | Claude Code |
+| `claude.settings.notFound` | Not found. Install Claude Code and run "claude" once to sign in, or click to choose claude.exe |
+| `claude.settings.chooseExeTitle` | Choose claude.exe |
+| `claude.settings.findAutomatically` | Find Claude Code automatically |
+| `claude.settings.findAutomaticallyDesc` | Forget a chosen claude.exe and look in the usual places |
+| `claude.settings.model` | Model |
+| `claude.settings.modelDesc` | Used for new conversations |
+| `claude.settings.modelDefault` | Claude Code default |
+| `claude.settings.usage` | Usage in the Island |
+| `claude.settings.usageDesc` | Checks your plan's limits every 5 minutes. Add the Claude usage widget in Notch → Widgets |
+| `claude.settings.hotkey` | Ctrl+Alt+C opens the panel |
+| `claude.settings.hotkeyDesc` | Takes effect after restarting Bloom |
+| `claude.settings.folder` | Code project folder |
+| `claude.settings.folderNone` | None yet. Choose one in the panel's Code tab |

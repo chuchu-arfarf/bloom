@@ -695,6 +695,11 @@ pub async fn open_app(app: AppHandle, app_name: String) {
         return;
     }
 
+    if app_name == CLAUDE_LAUNCH_TARGET {
+        crate::claude::open_claude_window(app, None);
+        return;
+    }
+
     if is_bloom_launch_target(&app_name, &app.config().identifier) {
         open_settings_window(app);
         return;
@@ -717,7 +722,7 @@ fn is_bloom_launch_target(target: &str, identifier: &str) -> bool {
 #[tauri::command]
 pub async fn launch_new_instance(app_path: String, app_name: Option<String>) {
     tauri::async_runtime::spawn_blocking(move || {
-        if app_path == "start" {
+        if app_path == "start" || app_path == CLAUDE_LAUNCH_TARGET {
             return;
         }
         let target = pwa_launch_target(&app_path, app_name.as_deref()).unwrap_or(app_path);
@@ -2103,7 +2108,15 @@ pub async fn load_pinned_apps(app: AppHandle) -> Vec<AppInfo> {
         if let Ok(apps) = serde_json::from_str::<Vec<AppInfo>>(&content) {
             return tauri::async_runtime::spawn_blocking(move || {
                 let before: Vec<String> = apps.iter().map(|a| a.path.clone()).collect();
-                let apps = refresh_pinned_names(apps);
+                let mut apps = refresh_pinned_names(apps);
+                // Pin the Claude panel once, for docks set up before it existed.
+                let marker = path.with_file_name("claude-pin-added");
+                if !marker.exists() {
+                    if !apps.iter().any(|a| a.path == CLAUDE_LAUNCH_TARGET) {
+                        apps.push(claude_pin());
+                    }
+                    let _ = std::fs::write(&marker, b"1");
+                }
                 // A repaired pin (a web app saved as its browser) is saved
                 // right away; the dock only saves its pins when they change.
                 if apps.iter().map(|a| &a.path).ne(before.iter()) {
@@ -2156,7 +2169,23 @@ pub async fn load_pinned_apps(app: AppHandle) -> Vec<AppInfo> {
             executable: None,
             all_hwnds: None,
         },
+        claude_pin(),
     ]
+}
+
+/// The dock item that opens the Claude panel (src-tauri/src/claude.rs).
+pub const CLAUDE_LAUNCH_TARGET: &str = "bloom-claude";
+
+fn claude_pin() -> AppInfo {
+    AppInfo {
+        name: "Claude".into(),
+        path: CLAUDE_LAUNCH_TARGET.into(),
+        icon: None,
+        is_running: false,
+        hwnd: None,
+        executable: None,
+        all_hwnds: None,
+    }
 }
 
 #[tauri::command]

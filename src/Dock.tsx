@@ -623,7 +623,7 @@ const Dock = memo(function Dock() {
 
 	const fetchIcon = async (path: string, name?: string, hwnd?: number) => {
 		// This is an internal launch target, not an executable the shell can resolve.
-		if (path === "bloom-settings") return;
+		if (path === "bloom-settings" || path === "bloom-claude") return;
 		const isHost = isBrowserHost(path);
 		const cacheKey =
 			isHost && name ? `${path}:${name.toLowerCase()}` : hwnd ? `${path}-${hwnd}` : path;
@@ -1656,7 +1656,9 @@ const Dock = memo(function Dock() {
 															app.icon ||
 															(app.path === "bloom-settings"
 																? "/bloom-settings-sliders.png"
-																: undefined);
+																: app.path === "bloom-claude"
+																	? "/claude-panel.svg"
+																	: undefined);
 
 														const isBloomOrSettings =
 															app.name.toLowerCase() === "settings" ||
@@ -1828,7 +1830,9 @@ const Dock = memo(function Dock() {
 													app.icon ||
 													(app.path === "bloom-settings"
 														? "/bloom-settings-sliders.png"
-														: undefined);
+														: app.path === "bloom-claude"
+															? "/claude-panel.svg"
+															: undefined);
 												const isBloomOrSettings =
 													app.name.toLowerCase() === "settings" ||
 													app.name.toLowerCase() === "bloom" ||
