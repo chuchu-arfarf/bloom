@@ -14,6 +14,10 @@ const CHECK_INTERVAL_SECS: i64 = 24 * 60 * 60;
 /// succeeding, and the previous 10s cap made every check time out on such
 /// routes (no update found / no badge).
 const CHECK_TIMEOUT_SECS: u64 = 60;
+/// This is a personal fork with Claude features. Official Bloom updates would
+/// replace it, so update checks and installs are turned off.
+const UPDATES_DISABLED: bool = true;
+
 /// A release must be at least this old before auto-update installs it, so a
 /// broken release cannot reach everyone within minutes of being published.
 const MIN_AUTO_INSTALL_AGE_SECS: i64 = 24 * 60 * 60;
@@ -137,6 +141,9 @@ fn install_attempted_recently(state: &PersistedUpdateState, version: &str, now: 
 /// is set. Development builds skip the automatic network check because their
 /// version never tracks releases; manual checks still work.
 pub async fn check(app: &AppHandle, force: bool) -> Result<UpdateCheckResult, String> {
+    if UPDATES_DISABLED {
+        return Ok(UpdateCheckResult::default());
+    }
     if !force {
         if let Some(cached) = cached_result(app) {
             return Ok(cached);
@@ -201,6 +208,9 @@ pub async fn check(app: &AppHandle, force: bool) -> Result<UpdateCheckResult, St
 /// launches the NSIS installer and terminates this process, which then
 /// relaunches the app; on other platforms this returns after restarting.
 pub async fn install(app: &AppHandle) -> Result<(), String> {
+    if UPDATES_DISABLED {
+        return Err("Updates are turned off in this build".into());
+    }
     if UPDATE_BUSY.swap(true, Ordering::SeqCst) {
         return Err("an update is already in progress".to_string());
     }
