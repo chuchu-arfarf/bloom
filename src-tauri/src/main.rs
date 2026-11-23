@@ -12,6 +12,8 @@ mod diagnostics;
 mod dock_extras;
 mod i18n;
 mod jack;
+mod notification_store;
+mod notifications;
 mod onboarding;
 mod services;
 mod settings_window;
@@ -134,6 +136,12 @@ fn main() {
             claude::claude_new,
             claude::claude_set_folder,
             claude::claude_usage,
+            notifications::notifications_list,
+            notifications::notifications_apps,
+            notifications::notification_dismiss,
+            notifications::notifications_clear,
+            notifications::notification_open,
+            notifications::notification_app_icon,
             claude::open_claude_window,
             claude::hide_claude_window,
             hide_native_osd,
@@ -263,6 +271,7 @@ fn main() {
             crate::utils::init_settings_cache(app.handle());
             agent_alerts::setup(app.handle());
             claude::setup(app.handle());
+            notifications::setup(app.handle());
             // Crash-recovery: if a previous session was force-killed while the native
             // taskbar was hidden, restore it now. Runs before the frontend re-hides it
             // (init_dock fires after a delay), so the flag must be removed first.
