@@ -109,6 +109,11 @@ struct Panel {
 static PANEL: LazyLock<Mutex<Panel>> = LazyLock::new(|| Mutex::new(Panel::default()));
 static USAGE: Mutex<Option<UsageInfo>> = Mutex::new(None);
 static WINDOW_LOCK: Mutex<()> = Mutex::new(());
+/// When the panel last closed because focus moved away (see `hide_claude_window`).
+static LAST_BLUR_HIDE: Mutex<Option<std::time::Instant>> = Mutex::new(None);
+/// A click on the dock's Claude icon first takes focus from the open panel,
+/// which closes it; an open request this soon after counts as "close" instead.
+const TOGGLE_WINDOW: Duration = Duration::from_millis(400);
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Tab {
@@ -810,17 +815,51 @@ fn show_panel(app: &AppHandle, tab: Option<String>) {
     }
 }
 
-/// Opens the panel, on "chat" or "code" when given.
+/// Opens the panel, on "chat" or "code" when given. If the panel closed a
+/// moment ago because this very click took focus from it, it stays closed,
+/// so clicking the dock icon toggles the panel.
 #[tauri::command]
 pub fn open_claude_window(app: AppHandle, tab: Option<String>) {
+    let just_closed = LAST_BLUR_HIDE
+        .lock()
+        .ok()
+        .and_then(|last| *last)
+        .is_some_and(|at| at.elapsed() < TOGGLE_WINDOW);
+    if just_closed {
+        return;
+    }
     // WebView2 creation must run off the Windows UI thread.
     tauri::async_runtime::spawn_blocking(move || show_panel(&app, tab));
 }
 
+/// Hides the panel. `from_blur` is set when it closes because focus moved away.
 #[tauri::command]
-pub fn hide_claude_window(app: AppHandle) {
+pub fn hide_claude_window(app: AppHandle, from_blur: Option<bool>) {
     if let Some(window) = app.get_webview_window(WINDOW_LABEL) {
+        if window.is_visible().unwrap_or(false) && from_blur == Some(true) {
+            if let Ok(mut last) = LAST_BLUR_HIDE.lock() {
+                *last = Some(std::time::Instant::now());
+            }
+        }
         let _ = window.hide();
+    }
+}
+
+/// The panel window's handle, for matching it to the dock's Claude icon.
+pub fn panel_hwnd(app: &AppHandle) -> Option<isize> {
+    app.get_webview_window(WINDOW_LABEL)
+        .and_then(|window| window.hwnd().ok())
+        .map(|hwnd| hwnd.0 as isize)
+}
+
+/// Shows the open panel as the dock's Claude item rather than as a separate
+/// Bloom window.
+pub fn identify_running_window(app: &mut crate::types::AppInfo, panel_hwnd: Option<isize>) {
+    if panel_hwnd.is_some() && app.hwnd == panel_hwnd {
+        app.path = crate::commands::CLAUDE_LAUNCH_TARGET.into();
+        app.name = "Claude".into();
+        app.executable = None;
+        app.icon = None;
     }
 }
 
@@ -829,7 +868,7 @@ fn toggle_panel(app: &AppHandle) {
         .get_webview_window(WINDOW_LABEL)
         .is_some_and(|w| w.is_visible().unwrap_or(false) && w.is_focused().unwrap_or(false));
     if open {
-        hide_claude_window(app.clone());
+        hide_claude_window(app.clone(), None);
     } else {
         show_panel(app, None);
     }

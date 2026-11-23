@@ -738,6 +738,9 @@ const Dock = memo(function Dock() {
 		try {
 			if (app.path === "start") {
 				await invoke("open_app", { appName: "start" });
+			} else if (app.path === "bloom-claude") {
+				// The Claude panel opens and closes from its icon, open or not.
+				await invoke("open_app", { appName: "bloom-claude" });
 			} else if (app.is_background && app.tray_ids?.length === 1) {
 				await invoke("activate_tray_icon", { trayId: app.tray_ids[0] });
 			} else if (app.all_hwnds && app.all_hwnds.length > 1) {

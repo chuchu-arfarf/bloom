@@ -97,7 +97,7 @@ function ClaudePanel() {
 			if (focused) {
 				inputRef.current?.focus();
 			} else if (!pickingFolder.current) {
-				invoke("hide_claude_window").catch(console.error);
+				invoke("hide_claude_window", { fromBlur: true }).catch(console.error);
 			}
 		});
 		return () => {
