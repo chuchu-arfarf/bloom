@@ -17,7 +17,7 @@ export function IntegrationsTab({ agentAlertsEnabled, onToggleAgentAlerts }: Int
 			<section className="integration-category" aria-labelledby="claude-panel-title">
 				<div className="integration-category-heading">
 					<h2 id="claude-panel-title">{t("claude.settings.title")}</h2>
-					<p>{t("claude.settings.description")}</p>
+					<p>{t("claude.settings.descriptionWeb")}</p>
 				</div>
 				<ClaudeSettings />
 			</section>

@@ -1004,6 +1004,8 @@ This page is generated from the [current English catalog](../src/i18n/locales/en
 | --- | --- |
 | `claude.tabs.chat` | Chat |
 | `claude.tabs.code` | Code |
+| `claude.tabs.web` | claude.ai |
+| `claude.tabs.toWeb` | Switch to claude.ai |
 
 ## Claude → Chat
 
@@ -1104,7 +1106,6 @@ This page is generated from the [current English catalog](../src/i18n/locales/en
 | Reference key | English text |
 | --- | --- |
 | `claude.settings.title` | Claude panel |
-| `claude.settings.description` | Chat with Claude, or let Claude Code work in a project folder, from the dock or with Ctrl+Alt+C. It uses Claude Code on this PC, signed in with your own Claude plan. |
 | `claude.settings.openPanel` | Open the Claude panel |
 | `claude.settings.openPanelDesc` | Also from the Claude icon in the dock, or Ctrl+Alt+C |
 | `claude.settings.location` | Claude Code |
@@ -1121,3 +1122,4 @@ This page is generated from the [current English catalog](../src/i18n/locales/en
 | `claude.settings.hotkeyDesc` | Takes effect after restarting Bloom |
 | `claude.settings.folder` | Code project folder |
 | `claude.settings.folderNone` | None yet. Choose one in the panel's Code tab |
+| `claude.settings.descriptionWeb` | Your claude.ai, from the Claude icon in the dock or with Ctrl+Alt+C. Sign in once inside the panel. Its &lt;/&gt; button switches to Code, where Claude Code works in a project folder on this PC with your own Claude plan. |

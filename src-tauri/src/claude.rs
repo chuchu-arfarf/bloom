@@ -2,10 +2,11 @@
 //! installed, in its streaming JSON mode. Claude Code signs in with the user's
 //! own Claude plan; Bloom never sees credentials.
 //!
-//! Two conversations live here for the whole run: "chat" (web search only, no
-//! file access) and "code" (works in a project folder and asks before editing
-//! files or running commands). The panel window can be closed and reopened
-//! without losing them.
+//! The panel has two views. The main one is the user's own claude.ai (see
+//! `claude_web`). The Code view runs Claude Code in a project folder and asks
+//! before editing files or running commands; its conversation lives here for
+//! the whole run, so the panel can be closed and reopened without losing it.
+//! (A "chat" conversation also lives here, from before claude.ai replaced it.)
 use crate::claude_protocol::{self as protocol, Event, ToolCall, TurnError, UsageInfo};
 use serde::Serialize;
 use serde_json::Value;
@@ -794,30 +795,120 @@ fn place_window(window: &tauri::WebviewWindow) {
             origin.y + area.height as i32 - (96.0 * scale) as i32,
         ),
     };
+    // Too tall for the space above the dock (a small screen): shrink to fit.
+    let room = bottom - (origin.y + gap);
+    let height = if height > room && room > 200 {
+        let _ = window.set_size(tauri::PhysicalSize::new(width as u32, room as u32));
+        room
+    } else {
+        height
+    };
     let x =
         (center_x - width / 2).clamp(left_edge + gap, (right_edge - width - gap).max(left_edge));
     let y = (bottom - height).max(origin.y + gap);
     let _ = window.set_position(tauri::PhysicalPosition::new(x, y));
 }
 
-fn show_panel(app: &AppHandle, tab: Option<String>) {
-    match panel_window(app) {
-        Ok(window) => {
-            place_window(&window);
-            let _ = window.show();
-            let _ = window.unminimize();
-            let _ = window.set_focus();
-            if let Some(tab) = tab {
-                let _ = app.emit_to(WINDOW_LABEL, "claude-open-tab", tab);
-            }
-        }
-        Err(error) => eprintln!("Failed to open the Claude panel: {error}"),
+/// The panel's two views: the user's claude.ai, or Claude Code in a folder.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum View {
+    Web,
+    Code,
+}
+
+const VIEW_KEY: &str = "bloom-claude-view";
+
+/// The view the panel opens on: the one last used, claude.ai at first.
+fn last_view(app: &AppHandle) -> View {
+    match crate::utils::get_setting_str(app, VIEW_KEY).as_deref() {
+        Some("code") => View::Code,
+        _ => View::Web,
     }
 }
 
-/// Opens the panel, on "chat" or "code" when given. If the panel closed a
-/// moment ago because this very click took focus from it, it stays closed,
-/// so clicking the dock icon toggles the panel.
+fn view_label(view: View) -> &'static str {
+    match view {
+        View::Web => crate::claude_web::LABEL,
+        View::Code => WINDOW_LABEL,
+    }
+}
+
+fn view_window(app: &AppHandle, view: View) -> Result<tauri::WebviewWindow, String> {
+    match view {
+        View::Code => panel_window(app),
+        View::Web => {
+            let _guard = WINDOW_LOCK.lock().map_err(|e| e.to_string())?;
+            if crate::state::SHUTTING_DOWN.load(std::sync::atomic::Ordering::Relaxed) {
+                return Err("Bloom is shutting down".into());
+            }
+            match app.get_webview_window(crate::claude_web::LABEL) {
+                Some(window) => Ok(window),
+                None => crate::claude_web::build(app),
+            }
+        }
+    }
+}
+
+/// The panel windows that exist: Code and claude.ai.
+fn panel_windows(app: &AppHandle) -> Vec<tauri::WebviewWindow> {
+    [WINDOW_LABEL, crate::claude_web::LABEL]
+        .into_iter()
+        .filter_map(|label| app.get_webview_window(label))
+        .collect()
+}
+
+/// Shows one view of the panel above the dock and hides the other.
+pub fn show_view(app: &AppHandle, view: View) {
+    if last_view(app) != view {
+        let value = Value::String(if view == View::Code { "code" } else { "web" }.into());
+        let _ = crate::commands::save_setting(app.clone(), VIEW_KEY.into(), value);
+    }
+    let window = match view_window(app, view) {
+        Ok(window) => window,
+        Err(error) => {
+            eprintln!("Failed to open the Claude panel: {error}");
+            return;
+        }
+    };
+    if view == View::Web {
+        // Ask for the full size each time; placing it shrinks it to fit.
+        let _ = window.set_size(crate::claude_web::SIZE);
+    }
+    place_window(&window);
+    let _ = window.show();
+    let _ = window.unminimize();
+    let _ = window.set_focus();
+    if view == View::Code {
+        let _ = app.emit_to(WINDOW_LABEL, "claude-open-tab", "code");
+    }
+    if let Some(other) = app.get_webview_window(view_label(match view {
+        View::Web => View::Code,
+        View::Code => View::Web,
+    })) {
+        let _ = other.hide();
+    }
+}
+
+/// Opens the panel: on Code when `tab` is "code", on claude.ai when it is
+/// "chat" or "web", otherwise on the view last used.
+fn show_panel(app: &AppHandle, tab: Option<String>) {
+    let view = match tab.as_deref() {
+        Some("code") => View::Code,
+        Some("chat") | Some("web") => View::Web,
+        _ => last_view(app),
+    };
+    show_view(app, view);
+}
+
+fn panel_in_front(app: &AppHandle) -> bool {
+    panel_windows(app)
+        .iter()
+        .any(|w| w.is_visible().unwrap_or(false) && w.is_focused().unwrap_or(false))
+}
+
+/// Opens the panel (see `show_panel`). If it is already open and in front, or
+/// closed a moment ago because this very click took focus from it, it closes
+/// instead, so clicking the dock icon toggles the panel.
 #[tauri::command]
 pub fn open_claude_window(app: AppHandle, tab: Option<String>) {
     let just_closed = LAST_BLUR_HIDE
@@ -828,14 +919,30 @@ pub fn open_claude_window(app: AppHandle, tab: Option<String>) {
     if just_closed {
         return;
     }
+    if tab.is_none() && panel_in_front(&app) {
+        hide_claude_window(app, None);
+        return;
+    }
     // WebView2 creation must run off the Windows UI thread.
     tauri::async_runtime::spawn_blocking(move || show_panel(&app, tab));
+}
+
+/// Switches the open panel to the other view. Called by the Code view's
+/// claude.ai button with "web".
+#[tauri::command]
+pub fn claude_show_view(app: AppHandle, view: String) {
+    let view = if view == "code" {
+        View::Code
+    } else {
+        View::Web
+    };
+    tauri::async_runtime::spawn_blocking(move || show_view(&app, view));
 }
 
 /// Hides the panel. `from_blur` is set when it closes because focus moved away.
 #[tauri::command]
 pub fn hide_claude_window(app: AppHandle, from_blur: Option<bool>) {
-    if let Some(window) = app.get_webview_window(WINDOW_LABEL) {
+    for window in panel_windows(&app) {
         if window.is_visible().unwrap_or(false) && from_blur == Some(true) {
             if let Ok(mut last) = LAST_BLUR_HIDE.lock() {
                 *last = Some(std::time::Instant::now());
@@ -845,17 +952,19 @@ pub fn hide_claude_window(app: AppHandle, from_blur: Option<bool>) {
     }
 }
 
-/// The panel window's handle, for matching it to the dock's Claude icon.
-pub fn panel_hwnd(app: &AppHandle) -> Option<isize> {
-    app.get_webview_window(WINDOW_LABEL)
-        .and_then(|window| window.hwnd().ok())
+/// The panel windows' handles, for matching them to the dock's Claude icon.
+pub fn panel_hwnds(app: &AppHandle) -> Vec<isize> {
+    panel_windows(app)
+        .iter()
+        .filter_map(|window| window.hwnd().ok())
         .map(|hwnd| hwnd.0 as isize)
+        .collect()
 }
 
 /// Shows the open panel as the dock's Claude item rather than as a separate
 /// Bloom window.
-pub fn identify_running_window(app: &mut crate::types::AppInfo, panel_hwnd: Option<isize>) {
-    if panel_hwnd.is_some() && app.hwnd == panel_hwnd {
+pub fn identify_running_window(app: &mut crate::types::AppInfo, panel_hwnds: &[isize]) {
+    if app.hwnd.is_some_and(|hwnd| panel_hwnds.contains(&hwnd)) {
         app.path = crate::commands::CLAUDE_LAUNCH_TARGET.into();
         app.name = "Claude".into();
         app.executable = None;
@@ -864,10 +973,7 @@ pub fn identify_running_window(app: &mut crate::types::AppInfo, panel_hwnd: Opti
 }
 
 fn toggle_panel(app: &AppHandle) {
-    let open = app
-        .get_webview_window(WINDOW_LABEL)
-        .is_some_and(|w| w.is_visible().unwrap_or(false) && w.is_focused().unwrap_or(false));
-    if open {
+    if panel_in_front(app) {
         hide_claude_window(app.clone(), None);
     } else {
         show_panel(app, None);

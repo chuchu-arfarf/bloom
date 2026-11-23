@@ -230,7 +230,9 @@ with open(path, 'w') as f: json.dump(settings, f)
 | `bloom-claude-usage-enabled`  | `"true"` / `"false"` | `"true"` | Check the Claude plan's usage every 5 minutes for the Island's `claude` status widget and the panel.           |
 | `bloom-claude-hotkey-enabled` | `"true"` / `"false"` | `"true"` | Register Ctrl+Alt+C to open or close the panel. Read at startup.                                               |
 
-The dock item `bloom-claude` opens the panel. It is pinned once automatically; unpin it like any other app.
+| `bloom-claude-view`           | `"web"` / `"code"`   | `"web"`  | The panel view last used, which it opens on: claude.ai, or the Code view.                                      |
+
+The dock item `bloom-claude` opens the panel. It is pinned once automatically; unpin it like any other app. The panel's main view is claude.ai itself, in its own window (`claude-web`) with no access to Bloom's commands; its `</>` button switches to the Code view, and links to other sites open in the default browser.
 
 ### Calendars and tasks (this fork)
 

@@ -859,7 +859,7 @@ pub async fn get_active_windows(app: AppHandle) -> Vec<AppInfo> {
             .get_webview_window("settings")
             .and_then(|window| window.hwnd().ok())
             .map(|hwnd| hwnd.0 as isize);
-        let claude_hwnd = crate::claude::panel_hwnd(&app);
+        let claude_hwnds = crate::claude::panel_hwnds(&app);
         use windows::Win32::System::Com::{CoInitializeEx, CoUninitialize, COINIT_MULTITHREADED};
         // COM is required while enumerating: each window's AppUserModelID is read
         // through the shell property store.
@@ -877,7 +877,7 @@ pub async fn get_active_windows(app: AppHandle) -> Vec<AppInfo> {
 
         for mut app in apps {
             crate::settings_window::identify_running_window(&mut app, settings_hwnd);
-            crate::claude::identify_running_window(&mut app, claude_hwnd);
+            crate::claude::identify_running_window(&mut app, &claude_hwnds);
             let path = app.path.to_lowercase();
             let name = app.name.to_lowercase();
 

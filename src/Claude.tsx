@@ -69,7 +69,8 @@ function Item({ item }: { item: ChatItem }) {
 function ClaudePanel() {
 	useTranslation();
 	const [state, setState] = useState<PanelState>(EMPTY_STATE);
-	const [tab, setTab] = useState<ClaudeTab>("chat");
+	// claude.ai replaced the Chat tab (see claude_web.rs); this window is Code only.
+	const tab: ClaudeTab = "code";
 	const [draft, setDraft] = useState("");
 	const [usage, setUsage] = useState<UsageInfo | null>(null);
 	const pickingFolder = useRef(false);
@@ -83,8 +84,7 @@ function ClaudePanel() {
 		invoke<UsageInfo | null>("claude_usage", { refresh: false }).then(setUsage).catch(console.error);
 		const unlisteners = [
 			listen<PanelState>("claude-state", (e) => setState(e.payload)),
-			listen<UsageInfo>("claude-usage", (e) => setUsage(e.payload)),
-			listen<string>("claude-open-tab", (e) => setTab(e.payload === "code" ? "code" : "chat"))
+			listen<UsageInfo>("claude-usage", (e) => setUsage(e.payload))
 		];
 		return () => {
 			unlisteners.forEach((u) => u.then((f) => f()));
@@ -161,18 +161,16 @@ function ClaudePanel() {
 	return (
 		<div className="claude-panel">
 			<header className="claude-header">
-				<div className="claude-tabs" role="tablist">
-					{(["chat", "code"] as const).map((id) => (
-						<button
-							key={id}
-							role="tab"
-							aria-selected={tab === id}
-							className={tab === id ? "active" : ""}
-							onClick={() => setTab(id)}
-						>
-							{id === "chat" ? t("claude.tabs.chat") : t("claude.tabs.code")}
-						</button>
-					))}
+				<div className="claude-tabs">
+					<button
+						title={t("claude.tabs.toWeb")}
+						onClick={() => invoke("claude_show_view", { view: "web" }).catch(console.error)}
+					>
+						{t("claude.tabs.web")}
+					</button>
+					<button className="active" aria-current="page">
+						{t("claude.tabs.code")}
+					</button>
 				</div>
 				{five && (
 					<div
@@ -222,11 +220,9 @@ function ClaudePanel() {
 				{!state.installed && <div className="claude-error">{errorText("not_installed")}</div>}
 				{session.items.length === 0 && state.installed && (
 					<div className="claude-empty">
-						{tab === "chat"
-							? t("claude.chat.empty")
-							: state.code.folder
-								? t("claude.code.emptyWithFolder", { folder: folderName(state.code.folder) })
-								: t("claude.code.emptyNoFolder")}
+						{state.code.folder
+							? t("claude.code.emptyWithFolder", { folder: folderName(state.code.folder) })
+							: t("claude.code.emptyNoFolder")}
 					</div>
 				)}
 				{session.items.map((item, index) => (
@@ -256,7 +252,7 @@ function ClaudePanel() {
 			{busy && (
 				<div className="claude-working">
 					<span className="claude-dots" aria-hidden="true" />
-					<span>{tab === "chat" ? t("claude.status.thinking") : t("claude.status.working")}</span>
+					<span>{t("claude.status.working")}</span>
 					<button onClick={() => invoke("claude_interrupt", { tab }).catch(console.error)}>
 						<Square size={11} /> {t("claude.actions.stop")}
 					</button>
@@ -269,7 +265,7 @@ function ClaudePanel() {
 					value={draft}
 					rows={1}
 					disabled={waiting}
-					placeholder={tab === "chat" ? t("claude.chat.placeholder") : t("claude.code.placeholder")}
+					placeholder={t("claude.code.placeholder")}
 					aria-label={t("claude.input.label")}
 					onChange={(e) => setDraft(e.target.value)}
 					onKeyDown={(e) => {
@@ -289,7 +285,7 @@ function ClaudePanel() {
 				</button>
 			</div>
 			<div className="claude-footer">
-				{tab === "chat" ? t("claude.chat.footer") : t("claude.code.footer")}
+				{t("claude.code.footer")}
 			</div>
 		</div>
 	);

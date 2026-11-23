@@ -7,6 +7,7 @@ mod buds;
 mod calendar;
 mod claude;
 mod claude_protocol;
+mod claude_web;
 mod commands;
 mod diagnostics;
 mod dock_extras;
@@ -143,6 +144,7 @@ fn main() {
             notifications::notification_open,
             notifications::notification_app_icon,
             claude::open_claude_window,
+            claude::claude_show_view,
             claude::hide_claude_window,
             hide_native_osd,
             open_settings_window,
