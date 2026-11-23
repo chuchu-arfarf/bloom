@@ -241,3 +241,13 @@ The dock item `bloom-claude` opens the panel. It is pinned once automatically; u
 | `bloom-calendar-reminder-minutes`  | number               | `"5"`    | How many minutes before an event the reminder appears.                                       |
 | `bloom-calendar-pause-music`       | `"true"` / `"false"` | `"true"` | Pause playing media when a timed event starts.                                               |
 | `bloom-tasks`                      | JSON                 | `"[]"`   | The Calendar view's task list: `[{ "id", "text", "done" }]`.                                 |
+
+### Notifications (this fork)
+
+Bloom reads Windows' notification center (read-only) to show new notifications on the Island and list them in the Notifications drawer. Dismissing one in Bloom hides it in Bloom only; Windows keeps it until it is cleared there or the app withdraws it.
+
+| Key                                 | Type                 | Default  | Description                                                                                   |
+| ----------------------------------- | -------------------- | -------- | --------------------------------------------------------------------------------------------- |
+| `bloom-notch-notifications-enabled` | `"true"` / `"false"` | `"true"` | Show the Notifications panel in the notch and read Windows' notifications. Counts as a panel. |
+| `bloom-notifications-popups`        | `"true"` / `"false"` | `"true"` | Pop each new notification up on the Island for a few seconds.                                 |
+| `bloom-notifications-muted`         | JSON                 | `"[]"`   | App ids (AppUserModelIDs) whose notifications don't pop up. They still reach the drawer.      |

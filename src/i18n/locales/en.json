@@ -131,7 +131,9 @@
 			"weather": "Weather Status",
 			"weatherAuto": "Auto-detect location",
 			"cityPlaceholder": "Search city...",
-			"cityClear": "Clear city"
+			"cityClear": "Clear city",
+			"notificationsPanel": "Notifications",
+			"notificationsPanelDesc": "Notifications from your apps, like a phone's drawer"
 		},
 		"widgets": {
 			"weather": "Weather",
@@ -140,7 +142,8 @@
 			"ram": "RAM",
 			"disk": "Disk",
 			"net": "Net",
-			"claude": "Claude usage"
+			"claude": "Claude usage",
+			"notifications": "Notifications"
 		},
 		"overlays": {
 			"volume": "Volume HUD",
@@ -232,7 +235,9 @@
 			"charging": "Charging",
 			"onBattery": "On Battery",
 			"claudeUsage": "Claude usage: {{percent}}% of the current 5-hour session",
-			"claudeUsageResets": "Claude usage: {{percent}}% of the current 5-hour session, resets {{time}}"
+			"claudeUsageResets": "Claude usage: {{percent}}% of the current 5-hour session, resets {{time}}",
+			"notifications_one": "{{count}} notification",
+			"notifications_other": "{{count}} notifications"
 		},
 		"music": {
 			"artAlt": "Art",
@@ -295,6 +300,18 @@
 			"restartBloom": "Restart Bloom",
 			"volume": "Volume",
 			"brightness": "Brightness"
+		},
+		"notifications": {
+			"title": "Notifications",
+			"clearAll": "Clear all",
+			"clearApp": "Clear {{app}} notifications",
+			"dismiss": "Dismiss",
+			"openApp": "Open {{app}}",
+			"empty": "No notifications",
+			"unavailable": "Can't read Windows notifications. See Settings → Integrations.",
+			"now": "now",
+			"count_one": "{{count}} notification",
+			"count_other": "{{count}} notifications"
 		}
 	},
 	"weather": {
@@ -803,7 +820,15 @@
 		"calendarReminders": "Meeting reminders",
 		"calendarRemindersDesc": "Show the next event in the Island 5 minutes before it starts",
 		"calendarPauseMusic": "Pause music when a meeting starts",
-		"calendarPauseMusicDesc": "Only for timed events, not all-day ones"
+		"calendarPauseMusicDesc": "Only for timed events, not all-day ones",
+		"notifications": "Notifications",
+		"notificationsDescription": "New notifications from Viber, WhatsApp and your other apps pop up on the Island. Turn the drawer on or off in Settings → Notch.",
+		"notificationsPopups": "Pop up on the Island",
+		"notificationsPopupsDesc": "Show each new notification on the Island for a few seconds",
+		"notificationsAppDesc": "Pop up notifications from this app",
+		"notificationsUnavailable": "Can't read Windows notifications",
+		"notificationsWindows": "Windows notification settings",
+		"notificationsWindowsDesc": "Turn off Windows' own banners for an app if you only want the Island's"
 	},
 	"claude": {
 		"tabs": {

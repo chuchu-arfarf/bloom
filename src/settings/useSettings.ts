@@ -31,10 +31,10 @@ function readBool(val: string | null): boolean {
 }
 
 /** The notch panels a click can open. */
-export type NotchPanelChoice = "calendar" | "command-center" | "devices";
+export type NotchPanelChoice = "calendar" | "command-center" | "devices" | "notifications";
 
 function asPanelChoice(val: unknown): NotchPanelChoice {
-	return val === "command-center" || val === "devices" ? val : "calendar";
+	return val === "command-center" || val === "devices" || val === "notifications" ? val : "calendar";
 }
 
 export function useSettings() {
@@ -65,6 +65,7 @@ export function useSettings() {
 	const [calendarEnabled, setCalendarEnabled] = useState(true);
 	const [controlsPanelEnabled, setControlsPanelEnabled] = useState(true);
 	const [devicesPanelEnabled, setDevicesPanelEnabled] = useState(false);
+	const [notificationsPanelEnabled, setNotificationsPanelEnabled] = useState(true);
 	const [timerSoundEnabled, setTimerSoundEnabled] = useState(
 		() => localStorage.getItem("bloom-timer-sound-enabled") !== "false"
 	);
@@ -240,6 +241,7 @@ export function useSettings() {
 			apply(getVal("bloom-calendar-monday-first"), setCalendarMondayFirst, readBool);
 			apply(getVal("bloom-notch-command-center-enabled"), setControlsPanelEnabled, readBool);
 			apply(getVal("bloom-notch-devices-enabled"), setDevicesPanelEnabled, readBool);
+			apply(getVal("bloom-notch-notifications-enabled"), setNotificationsPanelEnabled, readBool);
 			apply(getVal("bloom-timer-sound-enabled"), setTimerSoundEnabled, readBool);
 			apply(getVal("bloom-music-mode-enabled"), setMusicModeEnabled, readBool);
 			apply(
@@ -434,6 +436,7 @@ export function useSettings() {
 		"bloom-calendar-monday-first": setCalendarMondayFirst,
 		"bloom-notch-command-center-enabled": setControlsPanelEnabled,
 		"bloom-notch-devices-enabled": setDevicesPanelEnabled,
+		"bloom-notch-notifications-enabled": setNotificationsPanelEnabled,
 		"bloom-timer-sound-enabled": setTimerSoundEnabled,
 		"bloom-music-mode-enabled": setMusicModeEnabled,
 		"bloom-notch-remember-panel": setNotchRememberPanel,
@@ -600,7 +603,10 @@ export function useSettings() {
 
 	// The notch needs at least one panel, so the last one on can't be turned off.
 	const enabledPanelCount =
-		Number(calendarEnabled) + Number(controlsPanelEnabled) + Number(devicesPanelEnabled);
+		Number(calendarEnabled) +
+		Number(controlsPanelEnabled) +
+		Number(devicesPanelEnabled) +
+		Number(notificationsPanelEnabled);
 
 	const toggleCalendarMondayFirst = () => {
 		const next = !calendarMondayFirst;
@@ -627,6 +633,13 @@ export function useSettings() {
 		if (!next && enabledPanelCount <= 1) return;
 		setDevicesPanelEnabled(next);
 		saveSetting("bloom-notch-devices-enabled", String(next));
+	};
+
+	const toggleNotificationsPanel = () => {
+		const next = !notificationsPanelEnabled;
+		if (!next && enabledPanelCount <= 1) return;
+		setNotificationsPanelEnabled(next);
+		saveSetting("bloom-notch-notifications-enabled", String(next));
 	};
 
 	const toggleTimerSound = () => {
@@ -1087,6 +1100,8 @@ export function useSettings() {
 		toggleControlsPanel,
 		devicesPanelEnabled,
 		toggleDevicesPanel,
+		notificationsPanelEnabled,
+		toggleNotificationsPanel,
 		enabledPanelCount,
 		timerSoundEnabled,
 		toggleTimerSound,

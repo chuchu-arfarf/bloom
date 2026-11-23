@@ -47,6 +47,8 @@ import { deviceArtFor } from "./devices/deviceArtFor";
 import { deviceLookFor } from "./devices/deviceLooks";
 import type { BudLevel, BudsBattery } from "./devices/connectedDevices";
 import { ConnectedDevicesPanel } from "./components/ConnectedDevicesPanel";
+import { AppIcon, NotificationsPanel } from "./components/NotificationsPanel";
+import { shouldPopUp, useNotices, type Notice } from "./notifications/notices";
 import { Calendar, calendarRows } from "./components/Calendar";
 import { useConnectedDevices } from "./hooks/useConnectedDevices";
 import { isWiredAudio, usbArtFor, usbDisplayName, type UsbIdentity } from "./devices/usbArtFor";
@@ -76,7 +78,8 @@ import {
 	SunMedium,
 	Sun,
 	Sparkles,
-	CalendarClock
+	CalendarClock,
+	Bell
 } from "lucide-react";
 
 /**
@@ -89,8 +92,8 @@ import {
  *   Dragging files onto the notch also opens the shelf. Wheel/swipe switches
  *   between tool panels, including when a live activity occupies the pill.
  */
-type NotchPanel = "calendar" | "command-center" | "devices";
-const NOTCH_PANELS: readonly NotchPanel[] = ["calendar", "command-center", "devices"];
+type NotchPanel = "calendar" | "command-center" | "devices" | "notifications";
+const NOTCH_PANELS: readonly NotchPanel[] = ["calendar", "command-center", "devices", "notifications"];
 const asNotchPanel = (value: unknown): NotchPanel | null =>
 	NOTCH_PANELS.includes(value as NotchPanel) ? (value as NotchPanel) : null;
 
@@ -98,6 +101,9 @@ const asNotchPanel = (value: unknown): NotchPanel | null =>
 // the maximum is the size the panel had before it grew to fit.
 const COMMAND_CENTER_WIDTH = 375;
 const DEVICES_MIN_HEIGHT = 150;
+// The notification drawer: the whole open notch, with its 36px top strip.
+const NOTIFICATIONS_HEIGHT = 330;
+const NOTIFICATIONS_EMPTY_HEIGHT = 150;
 const DEVICES_MAX_HEIGHT = 300;
 
 // Pomodoro timer limit.
@@ -460,6 +466,7 @@ type BloomMode =
 	| "wifi"
 	| "bluetooth"
 	| "devices"
+	| "notifications"
 	| "device";
 
 // A device that just connected or disconnected, shown briefly in the pill.
@@ -480,6 +487,8 @@ interface DeviceAlert {
 	meeting?: string;
 	// How long to show it, when not the device default.
 	duration?: number;
+	// A Windows notification instead of a device.
+	notice?: Notice;
 }
 
 // As sent by the backend's `bluetooth-connection` event.
@@ -758,7 +767,7 @@ function App() {
 	const [netUpSpeed, setNetUpSpeed] = useState(0);
 	const [netDownSpeed, setNetDownSpeed] = useState(0);
 	const [statusWidgets, setStatusWidgets] = useState<WidgetConfig>({
-		left: ["weather"],
+		left: ["notifications", "weather"],
 		right: ["claude", "battery"]
 	});
 
@@ -1126,6 +1135,13 @@ function App() {
 	const [settingsDevicesPanelEnabled, setSettingsDevicesPanelEnabled] = useState(
 		() => localStorage.getItem("bloom-notch-devices-enabled") === "true"
 	);
+	// The notification drawer, and popups for new notifications. On by default.
+	const [settingsNotificationsEnabled, setSettingsNotificationsEnabled] = useState(
+		() => localStorage.getItem("bloom-notch-notifications-enabled") !== "false"
+	);
+	const notices = useNotices(windowLabel === "main" && settingsNotificationsEnabled);
+	const notificationsHeight =
+		notices.items.length > 0 ? NOTIFICATIONS_HEIGHT : NOTIFICATIONS_EMPTY_HEIGHT;
 	const connectedDevices = useConnectedDevices(
 		windowLabel === "main" && settingsDevicesPanelEnabled
 	);
@@ -1212,6 +1228,9 @@ function App() {
 					getVal("bloom-notch-command-center-enabled", "true") !== "false"
 				);
 				setSettingsDevicesPanelEnabled(getVal("bloom-notch-devices-enabled", "false") === "true");
+				setSettingsNotificationsEnabled(
+					getVal("bloom-notch-notifications-enabled", "true") !== "false"
+				);
 				setSettingsTimerSoundEnabled(getVal("bloom-timer-sound-enabled", "true") !== "false");
 				setSettingsMusicModeEnabled(getVal("bloom-music-mode-enabled", "true") !== "false");
 				setRememberPanelEnabled(
@@ -1330,6 +1349,7 @@ function App() {
 			"bloom-calendar-monday-first": setCalendarMondayFirst,
 			"bloom-notch-command-center-enabled": setSettingsControlsPanelEnabled,
 			"bloom-notch-devices-enabled": setSettingsDevicesPanelEnabled,
+			"bloom-notch-notifications-enabled": setSettingsNotificationsEnabled,
 			"bloom-timer-sound-enabled": setSettingsTimerSoundEnabled,
 			"bloom-music-mode-enabled": setSettingsMusicModeEnabled,
 			"bloom-notch-remember-panel": setRememberPanelEnabled,
@@ -1986,6 +2006,7 @@ function App() {
 	function panelEnabled(panel: NotchPanel) {
 		if (panel === "calendar") return settingsCalendarEnabled;
 		if (panel === "command-center") return settingsControlsPanelEnabled;
+		if (panel === "notifications") return settingsNotificationsEnabled;
 		return settingsDevicesPanelEnabled;
 	}
 
@@ -2289,6 +2310,7 @@ function App() {
 		settingsCalendarEnabled,
 		settingsControlsPanelEnabled,
 		settingsDevicesPanelEnabled,
+		settingsNotificationsEnabled,
 		bloomMode,
 		isOpen
 	]);
@@ -2498,6 +2520,28 @@ function App() {
 		const timer = setInterval(check, 30_000);
 		return () => clearInterval(timer);
 	}, [windowLabel, calendar.events, showDeviceAlert]);
+
+	// A new Windows notification pops up on the pill, like a device alert;
+	// clicking it opens the app it came from. Settings → Integrations →
+	// Notifications turns popups off, for all apps or some.
+	useEffect(() => {
+		if (windowLabel !== "main" || !settingsNotificationsEnabled) return;
+		const unlisten = listen<Notice>("notification-new", ({ payload }) => {
+			if (!shouldPopUp(payload)) return;
+			showDeviceAlert({
+				id: `notice:${payload.id}`,
+				art: "headphones-wired",
+				name: payload.title,
+				connected: true,
+				battery: null,
+				notice: payload,
+				duration: 6000
+			});
+		});
+		return () => {
+			unlisten.then((fn) => fn());
+		};
+	}, [windowLabel, settingsNotificationsEnabled, showDeviceAlert]);
 
 	// The clock row normally returns when the alert's exit animation ends.
 	// If the alert never rendered (the notch was still starting up), there's
@@ -3180,6 +3224,24 @@ function App() {
 						<span className="label">{diskSpace}GB</span>
 					</>
 				);
+			case "notifications": {
+				const count = notices.items.length;
+				if (!settingsNotificationsEnabled || count === 0) return null;
+				return statusWidget(
+					"notifications",
+					tCount("notch.status.notifications", count),
+					<span
+						className="status-notifications"
+						onClick={(e) => {
+							e.stopPropagation();
+							openNotch("notifications");
+						}}
+					>
+						<Bell size={12} strokeWidth={2} />
+						<span className="label">{count}</span>
+					</span>
+				);
+			}
 			case "claude": {
 				const five = fiveHour(claudeUsage);
 				if (!five) return null;
@@ -3238,7 +3300,8 @@ function App() {
 	const getDynamicWidth = () => {
 		if (agentAlert || (agentAlertOnScreen && !isOpen && !deviceAlertOnScreen)) return agentActivityFitWidth + 24;
 		if (bloomMode === "announcement" && announcement && !announcementDismissed) return 380;
-		if (bloomMode === "device" && deviceAlert) return 330;
+		if (bloomMode === "device" && deviceAlert) return deviceAlert.notice ? 390 : 330;
+		if (bloomMode === "notifications") return 380;
 		if (isCalendarMode) return 480;
 		if (bloomMode === "shelf") return 380;
 		if (bloomMode === "command-center" && isOpen) return COMMAND_CENTER_WIDTH;
@@ -3289,6 +3352,7 @@ function App() {
 		if (bloomMode === "devices") {
 			return devicesPanelHeight;
 		}
+		if (bloomMode === "notifications") return notificationsHeight;
 		if (bloomMode === "wifi" || bloomMode === "bluetooth") return 300;
 		if (bloomMode === "status") return 36;
 		if (isMusicMode && isOpen) {
@@ -4083,6 +4147,21 @@ function App() {
 									)}
 								</AnimatePresence>
 
+								{/* Notification drawer */}
+								<AnimatePresence>
+									{bloomMode === "notifications" && (
+										<motion.div
+											key="notifications-view"
+											initial={{ opacity: 0 }}
+											animate={{ opacity: 1 }}
+											exit={{ opacity: 0, filter: "blur(4px)", transition: { duration: 0.1 } }}
+											transition={{ type: "spring", stiffness: 400, damping: 30 }}
+										>
+											<NotificationsPanel list={notices} height={notificationsHeight} />
+										</motion.div>
+									)}
+								</AnimatePresence>
+
 								{/* Command Center Panel */}
 								<AnimatePresence>
 									{bloomMode === "command-center" && (
@@ -4430,8 +4509,14 @@ function App() {
 												e.stopPropagation();
 												const usb = deviceAlert.usb;
 												const meeting = deviceAlert.meeting !== undefined;
+												const notice = deviceAlert.notice;
 												deviceAlertQueueRef.current = [];
 												setDeviceAlert(null);
+												// A notification opens the app it came from.
+												if (notice) {
+													invoke("notification_open", { id: notice.id }).catch(console.error);
+													return;
+												}
 												// A meeting reminder opens the calendar.
 												if (meeting) {
 													if (settingsCalendarEnabled) {
@@ -4451,7 +4536,9 @@ function App() {
 											exit={{ opacity: 0, filter: "blur(4px)", transition: { duration: 0.12 } }}
 											transition={{ duration: 0.2 }}
 										>
-											{deviceAlert.meeting !== undefined ? (
+											{deviceAlert.notice ? (
+												<AppIcon appId={deviceAlert.notice.app_id} size={36} />
+											) : deviceAlert.meeting !== undefined ? (
 												<div className="device-alert-meeting-icon" aria-hidden="true">
 													<CalendarClock size={30} strokeWidth={1.6} />
 												</div>
@@ -4465,8 +4552,9 @@ function App() {
 											)}
 											<div className="device-alert-text">
 												<span className="device-alert-name">{deviceAlert.name}</span>
-												<span className="device-alert-status">
-													{deviceAlert.meeting ??
+												<span className={`device-alert-status${deviceAlert.notice ? " notice-body" : ""}`}>
+													{deviceAlert.notice?.body ??
+														deviceAlert.meeting ??
 														deviceAlertStatus(
 															deviceAlert.art,
 															deviceAlert.connected,
@@ -4474,7 +4562,9 @@ function App() {
 														)}
 												</span>
 											</div>
-											{deviceAlert.meeting !== undefined ? null : deviceAlert.connected && deviceAlert.buds ? (
+											{deviceAlert.notice ? (
+												<span className="device-alert-app">{deviceAlert.notice.app}</span>
+											) : deviceAlert.meeting !== undefined ? null : deviceAlert.connected && deviceAlert.buds ? (
 												<DeviceBudsBattery buds={deviceAlert.buds} />
 											) : (
 												deviceAlert.connected &&

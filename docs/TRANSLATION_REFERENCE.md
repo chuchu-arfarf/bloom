@@ -173,6 +173,8 @@ This page is generated from the [current English catalog](../src/i18n/locales/en
 | `settings.notch.weatherAuto` | Auto-detect location |
 | `settings.notch.cityPlaceholder` | Search city... |
 | `settings.notch.cityClear` | Clear city |
+| `settings.notch.notificationsPanel` | Notifications |
+| `settings.notch.notificationsPanelDesc` | Notifications from your apps, like a phone's drawer |
 
 ## Settings → Widgets
 
@@ -185,6 +187,7 @@ This page is generated from the [current English catalog](../src/i18n/locales/en
 | `settings.widgets.disk` | Disk |
 | `settings.widgets.net` | Net |
 | `settings.widgets.claude` | Claude usage |
+| `settings.widgets.notifications` | Notifications |
 
 ## Settings → Overlays
 
@@ -303,6 +306,8 @@ This page is generated from the [current English catalog](../src/i18n/locales/en
 | `notch.status.onBattery` | On Battery |
 | `notch.status.claudeUsage` | Claude usage: {{percent}}% of the current 5-hour session |
 | `notch.status.claudeUsageResets` | Claude usage: {{percent}}% of the current 5-hour session, resets {{time}} |
+| `notch.status.notifications_one` | {{count}} notification |
+| `notch.status.notifications_other` | {{count}} notifications |
 
 ## Notch → Music controls
 
@@ -374,6 +379,21 @@ This page is generated from the [current English catalog](../src/i18n/locales/en
 | `notch.commandCenter.restartBloom` | Restart Bloom |
 | `notch.commandCenter.volume` | Volume |
 | `notch.commandCenter.brightness` | Brightness |
+
+## Notch → Notifications
+
+| Reference key | English text |
+| --- | --- |
+| `notch.notifications.title` | Notifications |
+| `notch.notifications.clearAll` | Clear all |
+| `notch.notifications.clearApp` | Clear {{app}} notifications |
+| `notch.notifications.dismiss` | Dismiss |
+| `notch.notifications.openApp` | Open {{app}} |
+| `notch.notifications.empty` | No notifications |
+| `notch.notifications.unavailable` | Can't read Windows notifications. See Settings → Integrations. |
+| `notch.notifications.now` | now |
+| `notch.notifications.count_one` | {{count}} notification |
+| `notch.notifications.count_other` | {{count}} notifications |
 
 ## Weather → Conditions
 
@@ -969,6 +989,14 @@ This page is generated from the [current English catalog](../src/i18n/locales/en
 | `integrations.calendarRemindersDesc` | Show the next event in the Island 5 minutes before it starts |
 | `integrations.calendarPauseMusic` | Pause music when a meeting starts |
 | `integrations.calendarPauseMusicDesc` | Only for timed events, not all-day ones |
+| `integrations.notifications` | Notifications |
+| `integrations.notificationsDescription` | New notifications from Viber, WhatsApp and your other apps pop up on the Island. Turn the drawer on or off in Settings → Notch. |
+| `integrations.notificationsPopups` | Pop up on the Island |
+| `integrations.notificationsPopupsDesc` | Show each new notification on the Island for a few seconds |
+| `integrations.notificationsAppDesc` | Pop up notifications from this app |
+| `integrations.notificationsUnavailable` | Can't read Windows notifications |
+| `integrations.notificationsWindows` | Windows notification settings |
+| `integrations.notificationsWindowsDesc` | Turn off Windows' own banners for an app if you only want the Island's |
 
 ## Claude → Tabs
 

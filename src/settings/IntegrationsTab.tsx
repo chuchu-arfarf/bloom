@@ -1,6 +1,7 @@
 import { AgentIntegrations } from "./AgentIntegrations";
 import { ClaudeSettings } from "./ClaudeSettings";
 import { CalendarSettings } from "./CalendarSettings";
+import { NotificationsSettings } from "./NotificationsSettings";
 import { t, useTranslation } from "../i18n";
 import "./IntegrationsTab.css";
 
@@ -33,6 +34,13 @@ export function IntegrationsTab({ agentAlertsEnabled, onToggleAgentAlerts }: Int
 					<p>{t("integrations.calendarsDescription")}</p>
 				</div>
 				<CalendarSettings />
+			</section>
+			<section className="integration-category" aria-labelledby="notification-settings-title">
+				<div className="integration-category-heading">
+					<h2 id="notification-settings-title">{t("integrations.notifications")}</h2>
+					<p>{t("integrations.notificationsDescription")}</p>
+				</div>
+				<NotificationsSettings />
 			</section>
 		</>
 	);

@@ -29,7 +29,8 @@ import {
 	ArrowLeftRight,
 	ChevronUp,
 	ChevronDown,
-	Sparkles
+	Sparkles,
+	Bell
 } from "lucide-react";
 import type { ComponentType, SVGProps } from "react";
 import { t, useTranslation } from "../i18n";
@@ -53,11 +54,12 @@ const WIDGET_DEFS: WidgetDef[] = [
 	{ id: "ram", labelKey: "settings.widgets.ram", icon: MemoryStick, color: "#a78bfa" },
 	{ id: "disk", labelKey: "settings.widgets.disk", icon: HardDrive, color: "#38bdf8" },
 	{ id: "net", labelKey: "settings.widgets.net", icon: ArrowUpDown, color: "#2dd4bf" },
-	{ id: "claude", labelKey: "settings.widgets.claude", icon: Sparkles, color: "#f5b26b" }
+	{ id: "claude", labelKey: "settings.widgets.claude", icon: Sparkles, color: "#f5b26b" },
+	{ id: "notifications", labelKey: "settings.widgets.notifications", icon: Bell, color: "#f472b6" }
 ];
 
 const DEFAULT_CONFIG: WidgetConfig = {
-	left: ["weather"],
+	left: ["notifications", "weather"],
 	right: ["claude", "battery"]
 };
 

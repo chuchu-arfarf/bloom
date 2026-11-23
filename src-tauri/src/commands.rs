@@ -756,7 +756,7 @@ fn is_pwa_shortcut_for(app: &AppInfo, name: &str, host_exe: &str) -> bool {
 }
 
 /// Opens a file path, shortcut, or shell application id through the shell.
-fn launch_path(path: &str) {
+pub(crate) fn launch_path(path: &str) {
     unsafe {
         use windows::Win32::UI::Shell::ShellExecuteW;
         use windows::Win32::UI::WindowsAndMessaging::SW_SHOWNORMAL;
@@ -1345,7 +1345,7 @@ pub(crate) fn shell_app_name(aumid: &str) -> Option<String> {
 
 /// Resolves the icon of a shell application id (Store/UWP/packaged PWA) through
 /// `shell:AppsFolder`. `SHGetFileInfoW` cannot handle these; `IShellItemImageFactory` can.
-fn icon_from_aumid(aumid: &str) -> Option<String> {
+pub(crate) fn icon_from_aumid(aumid: &str) -> Option<String> {
     unsafe {
         use windows::Win32::Foundation::SIZE;
         use windows::Win32::UI::Shell::{

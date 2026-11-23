@@ -1,0 +1,221 @@
+/* Sits below the notch's 36px top strip, like the other panels. */
+.notices-panel {
+	position: absolute;
+	top: 36px;
+	left: 0;
+	width: 100%;
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
+	padding: 4px 12px 10px;
+	color: var(--bloom-text, white);
+	box-sizing: border-box;
+	border-radius: 0 0 18px 18px;
+	overflow: hidden;
+}
+
+.notices-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 2px 4px 8px;
+}
+
+.notices-title {
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.notices-clear-all {
+	border: none;
+	background: rgba(255, 255, 255, 0.1);
+	color: inherit;
+	font: inherit;
+	font-size: 11px;
+	padding: 3px 9px;
+	border-radius: 999px;
+	cursor: pointer;
+}
+
+.notices-clear-all:hover {
+	background: rgba(255, 255, 255, 0.18);
+}
+
+.notices-empty {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	font-size: 12px;
+	color: var(--bloom-text-muted, rgba(255, 255, 255, 0.55));
+}
+
+.notices-list {
+	flex: 1;
+	min-height: 0;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding-right: 2px;
+}
+
+.notices-list::-webkit-scrollbar {
+	width: 4px;
+}
+
+.notices-list::-webkit-scrollbar-thumb {
+	background: rgba(255, 255, 255, 0.18);
+	border-radius: 4px;
+}
+
+.notices-group {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.notices-group-head {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 0 4px;
+	font-size: 11px;
+	color: var(--bloom-text-muted, rgba(255, 255, 255, 0.6));
+}
+
+.notices-group-name {
+	font-weight: 600;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.notices-group-count {
+	opacity: 0.8;
+}
+
+.notices-group-head .notices-icon-button {
+	margin-left: auto;
+}
+
+.notice-app-icon {
+	flex: none;
+	border-radius: 5px;
+	object-fit: contain;
+}
+
+.notice-app-icon.placeholder {
+	display: grid;
+	place-items: center;
+	background: rgba(255, 255, 255, 0.12);
+}
+
+.notices-icon-button {
+	flex: none;
+	display: grid;
+	place-items: center;
+	width: 18px;
+	height: 18px;
+	border: none;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.08);
+	color: inherit;
+	cursor: pointer;
+	padding: 0;
+}
+
+.notices-icon-button:hover {
+	background: rgba(255, 255, 255, 0.2);
+}
+
+.notice-card {
+	background: rgba(255, 255, 255, 0.07);
+	border-radius: 12px;
+	padding: 8px 10px;
+	cursor: pointer;
+	outline: none;
+}
+
+.notice-card:hover,
+.notice-card:focus-visible {
+	background: rgba(255, 255, 255, 0.12);
+}
+
+.notice-card-top {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.notice-card-title {
+	flex: 1;
+	min-width: 0;
+	font-size: 12.5px;
+	font-weight: 600;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.notice-card-age {
+	flex: none;
+	font-size: 10.5px;
+	color: var(--bloom-text-muted, rgba(255, 255, 255, 0.5));
+}
+
+.notice-dismiss {
+	opacity: 0;
+	transition: opacity 0.15s;
+}
+
+.notice-card:hover .notice-dismiss,
+.notice-card:focus-visible .notice-dismiss {
+	opacity: 1;
+}
+
+.notice-card-body {
+	margin-top: 2px;
+	font-size: 12px;
+	line-height: 1.35;
+	color: var(--bloom-text-muted, rgba(255, 255, 255, 0.72));
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	white-space: pre-line;
+	word-break: break-word;
+}
+
+/* The popup on the pill */
+.device-alert .notice-app-icon {
+	border-radius: 9px;
+}
+
+.device-alert-status.notice-body {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.device-alert-app {
+	flex: none;
+	align-self: flex-start;
+	margin-top: 14px;
+	font-size: 10.5px;
+	color: var(--bloom-text-muted, rgba(255, 255, 255, 0.5));
+	max-width: 80px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* The bell status widget: opens the drawer. */
+.status-notifications {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	cursor: pointer;
+}

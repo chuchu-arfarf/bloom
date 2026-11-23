@@ -12,6 +12,7 @@ import {
 	Timer,
 	Archive,
 	Headphones,
+	Bell,
 	SlidersHorizontal,
 	X
 } from "lucide-react";
@@ -24,7 +25,8 @@ import type { NotchPanelChoice } from "./useSettings";
 const PANEL_CHOICES: readonly (readonly [NotchPanelChoice, string])[] = [
 	["calendar", "Calendar"],
 	["command-center", "Command Center"],
-	["devices", "Connected devices"]
+	["devices", "Connected devices"],
+	["notifications", "Notifications"]
 ];
 
 interface NotchTabProps {
@@ -40,6 +42,8 @@ interface NotchTabProps {
 	toggleControlsPanel: () => void;
 	devicesPanelEnabled: boolean;
 	toggleDevicesPanel: () => void;
+	notificationsPanelEnabled: boolean;
+	toggleNotificationsPanel: () => void;
 	enabledPanelCount: number;
 	notchRememberPanel: boolean;
 	toggleNotchRememberPanel: () => void;
@@ -92,6 +96,8 @@ export function NotchTab({
 	toggleControlsPanel,
 	devicesPanelEnabled,
 	toggleDevicesPanel,
+	notificationsPanelEnabled,
+	toggleNotificationsPanel,
 	enabledPanelCount,
 	notchRememberPanel,
 	toggleNotchRememberPanel,
@@ -129,7 +135,8 @@ export function NotchTab({
 	const panelOn: Record<NotchPanelChoice, boolean> = {
 		calendar: calendarEnabled,
 		"command-center": controlsPanelEnabled,
-		devices: devicesPanelEnabled
+		devices: devicesPanelEnabled,
+		notifications: notificationsPanelEnabled
 	};
 	const firstPanelOn = PANEL_CHOICES.find(([panel]) => panelOn[panel])?.[0] ?? "command-center";
 	// The notch needs at least one panel, so the last one on stays on.
@@ -264,6 +271,22 @@ export function NotchTab({
 							checked={devicesPanelEnabled}
 							disabled={isLastPanel(devicesPanelEnabled)}
 							onChange={toggleDevicesPanel}
+						/>
+						<span className="slider"></span>
+					</label>
+				</SettingRow>
+
+				<SettingRow
+					icon={Bell}
+					label={t("settings.notch.notificationsPanel")}
+					desc={t("settings.notch.notificationsPanelDesc")}
+				>
+					<label className="toggle-switch" title={lastPanelTitle(notificationsPanelEnabled)}>
+						<input
+							type="checkbox"
+							checked={notificationsPanelEnabled}
+							disabled={isLastPanel(notificationsPanelEnabled)}
+							onChange={toggleNotificationsPanel}
 						/>
 						<span className="slider"></span>
 					</label>

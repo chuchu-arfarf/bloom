@@ -276,6 +276,8 @@ function SettingsApp() {
 							toggleControlsPanel={settings.toggleControlsPanel}
 							devicesPanelEnabled={settings.devicesPanelEnabled}
 							toggleDevicesPanel={settings.toggleDevicesPanel}
+							notificationsPanelEnabled={settings.notificationsPanelEnabled}
+							toggleNotificationsPanel={settings.toggleNotificationsPanel}
 							enabledPanelCount={settings.enabledPanelCount}
 							notchRememberPanel={settings.notchRememberPanel}
 							toggleNotchRememberPanel={settings.toggleNotchRememberPanel}
