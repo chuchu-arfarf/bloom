@@ -748,7 +748,26 @@ fn panel_window(app: &AppHandle) -> Result<tauri::WebviewWindow, String> {
     Ok(window)
 }
 
-/// Places the panel centered under the Island, on the main monitor.
+/// The dock bar's screen rectangle in physical pixels (left, top, width), when
+/// the dock is showing.
+fn dock_bar() -> Option<(i32, i32, i32)> {
+    let app = crate::state::DISPLAY_MONITOR_HANDLE.get()?;
+    let dock = app.get_webview_window("dock")?;
+    if !dock.is_visible().unwrap_or(false) {
+        return None;
+    }
+    let scale = dock.scale_factor().ok()?;
+    let (position, _) = (*crate::state::DOCK_WINDOW_RECT.lock().ok()?)?;
+    let bar = (*crate::state::DOCK_RECT.lock().ok()?)?;
+    Some((
+        position.x + (bar.x as f64 * scale) as i32,
+        position.y + (bar.y as f64 * scale) as i32,
+        (bar.width as f64 * scale) as i32,
+    ))
+}
+
+/// Places the panel just above the dock, centered on it. Without a dock
+/// (hidden or turned off), it sits centered near the bottom of the main monitor.
 fn place_window(window: &tauri::WebviewWindow) {
     let Ok(Some(monitor)) = window.primary_monitor() else {
         return;
@@ -757,10 +776,22 @@ fn place_window(window: &tauri::WebviewWindow) {
         return;
     };
     let scale = monitor.scale_factor();
+    let gap = (12.0 * scale) as i32;
     let area = monitor.size();
     let origin = monitor.position();
-    let x = origin.x + (area.width as i32 - size.width as i32) / 2;
-    let y = origin.y + (64.0 * scale) as i32;
+    let (width, height) = (size.width as i32, size.height as i32);
+    let (left_edge, right_edge) = (origin.x, origin.x + area.width as i32);
+
+    let (center_x, bottom) = match dock_bar() {
+        Some((left, top, bar_width)) => (left + bar_width / 2, top - gap),
+        None => (
+            origin.x + area.width as i32 / 2,
+            origin.y + area.height as i32 - (96.0 * scale) as i32,
+        ),
+    };
+    let x =
+        (center_x - width / 2).clamp(left_edge + gap, (right_edge - width - gap).max(left_edge));
+    let y = (bottom - height).max(origin.y + gap);
     let _ = window.set_position(tauri::PhysicalPosition::new(x, y));
 }
 
