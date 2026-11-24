@@ -253,3 +253,4 @@ Bloom reads Windows' notification center (read-only) to show new notifications o
 | `bloom-notch-notifications-enabled` | `"true"` / `"false"` | `"true"` | Show the Notifications panel in the notch and read Windows' notifications. Counts as a panel. |
 | `bloom-notifications-popups`        | `"true"` / `"false"` | `"true"` | Pop each new notification up on the Island for a few seconds.                                 |
 | `bloom-notifications-muted`         | JSON                 | `"[]"`   | App ids (AppUserModelIDs) whose notifications don't pop up. They still reach the drawer.      |
+| `bloom-notch-stay-for-notifications` | `"true"` / `"false"` | `"false"` | In Smart or Peek notch mode, keep the notch on screen while the drawer has notifications.     |

@@ -948,6 +948,19 @@ function App() {
 	const appliedDock = useRef<{ enabled: boolean; mode: string } | null>(null);
 	const appliedNotchMode = useRef<string | null>(null);
 
+	// The notification drawer, and popups for new notifications. On by default.
+	const [settingsNotificationsEnabled, setSettingsNotificationsEnabled] = useState(
+		() => localStorage.getItem("bloom-notch-notifications-enabled") !== "false"
+	);
+	const notices = useNotices(windowLabel === "main" && settingsNotificationsEnabled);
+	const notificationsHeight =
+		notices.items.length > 0 ? NOTIFICATIONS_HEIGHT : NOTIFICATIONS_EMPTY_HEIGHT;
+	// Smart and peek modes keep the Island showing while notifications wait,
+	// when this is on (Settings → Integrations → Notifications).
+	const [settingsStayForNotices, setSettingsStayForNotices] = useState(
+		() => localStorage.getItem("bloom-notch-stay-for-notifications") === "true"
+	);
+	const noticesWaiting = settingsStayForNotices && notices.items.length > 0;
 	const isAnyInteraction = isHovered || isNotchHovered || isEdgeHovered;
 	const onboardingReveal = useOnboardingReveal("island");
 	const isHidden =
@@ -956,6 +969,7 @@ function App() {
 		!agentAlert &&
 		!agentAlertOnScreen &&
 		!deviceAlertOnScreen &&
+		!noticesWaiting &&
 		((notchMode === "smart" && isOverlapped && interactionState === "none") ||
 			(notchMode === "peek" && interactionState === "none" && !eventPeek));
 
@@ -1135,13 +1149,6 @@ function App() {
 	const [settingsDevicesPanelEnabled, setSettingsDevicesPanelEnabled] = useState(
 		() => localStorage.getItem("bloom-notch-devices-enabled") === "true"
 	);
-	// The notification drawer, and popups for new notifications. On by default.
-	const [settingsNotificationsEnabled, setSettingsNotificationsEnabled] = useState(
-		() => localStorage.getItem("bloom-notch-notifications-enabled") !== "false"
-	);
-	const notices = useNotices(windowLabel === "main" && settingsNotificationsEnabled);
-	const notificationsHeight =
-		notices.items.length > 0 ? NOTIFICATIONS_HEIGHT : NOTIFICATIONS_EMPTY_HEIGHT;
 	const connectedDevices = useConnectedDevices(
 		windowLabel === "main" && settingsDevicesPanelEnabled
 	);
@@ -1231,6 +1238,7 @@ function App() {
 				setSettingsNotificationsEnabled(
 					getVal("bloom-notch-notifications-enabled", "true") !== "false"
 				);
+				setSettingsStayForNotices(getVal("bloom-notch-stay-for-notifications", "false") === "true");
 				setSettingsTimerSoundEnabled(getVal("bloom-timer-sound-enabled", "true") !== "false");
 				setSettingsMusicModeEnabled(getVal("bloom-music-mode-enabled", "true") !== "false");
 				setRememberPanelEnabled(
@@ -1350,6 +1358,7 @@ function App() {
 			"bloom-notch-command-center-enabled": setSettingsControlsPanelEnabled,
 			"bloom-notch-devices-enabled": setSettingsDevicesPanelEnabled,
 			"bloom-notch-notifications-enabled": setSettingsNotificationsEnabled,
+			"bloom-notch-stay-for-notifications": setSettingsStayForNotices,
 			"bloom-timer-sound-enabled": setSettingsTimerSoundEnabled,
 			"bloom-music-mode-enabled": setSettingsMusicModeEnabled,
 			"bloom-notch-remember-panel": setRememberPanelEnabled,

@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import { Bell, BellRing, CircleAlert, Settings2 } from "lucide-react";
+import { Bell, BellRing, CircleAlert, Pin, Settings2 } from "lucide-react";
 import { SettingRow } from "./SettingRow";
 import { t, useTranslation } from "../i18n";
 import { MUTED_KEY, POPUPS_KEY, mutedApps, type NoticeApp, type NoticeList } from "../notifications/notices";
+
+const STAY_KEY = "bloom-notch-stay-for-notifications";
 
 async function save(key: string, value: string) {
 	try {
@@ -20,6 +22,7 @@ export function NotificationsSettings() {
 	useTranslation();
 	const [popups, setPopups] = useState(localStorage.getItem(POPUPS_KEY) !== "false");
 	const [muted, setMuted] = useState(mutedApps);
+	const [stay, setStay] = useState(localStorage.getItem(STAY_KEY) === "true");
 	const [apps, setApps] = useState<NoticeApp[]>([]);
 	const [error, setError] = useState<string | null>(null);
 
@@ -63,6 +66,24 @@ export function NotificationsSettings() {
 							const next = !popups;
 							setPopups(next);
 							save(POPUPS_KEY, String(next));
+						}}
+					/>
+					<span className="slider"></span>
+				</label>
+			</SettingRow>
+			<SettingRow
+				icon={Pin}
+				label={t("integrations.notificationsStay")}
+				desc={t("integrations.notificationsStayDesc")}
+			>
+				<label className="toggle-switch">
+					<input
+						type="checkbox"
+						checked={stay}
+						onChange={() => {
+							const next = !stay;
+							setStay(next);
+							save(STAY_KEY, String(next));
 						}}
 					/>
 					<span className="slider"></span>

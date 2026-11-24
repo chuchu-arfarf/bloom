@@ -828,7 +828,9 @@
 		"notificationsAppDesc": "Pop up notifications from this app",
 		"notificationsUnavailable": "Can't read Windows notifications",
 		"notificationsWindows": "Windows notification settings",
-		"notificationsWindowsDesc": "Turn off Windows' own banners for an app if you only want the Island's"
+		"notificationsWindowsDesc": "Turn off Windows' own banners for an app if you only want the Island's",
+		"notificationsStay": "Keep the Island showing while notifications wait",
+		"notificationsStayDesc": "When the notch is set to auto-hide (Smart or Peek), it stays on screen until the drawer is empty, even over full-screen apps"
 	},
 	"claude": {
 		"tabs": {

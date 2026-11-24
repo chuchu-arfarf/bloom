@@ -997,6 +997,8 @@ This page is generated from the [current English catalog](../src/i18n/locales/en
 | `integrations.notificationsUnavailable` | Can't read Windows notifications |
 | `integrations.notificationsWindows` | Windows notification settings |
 | `integrations.notificationsWindowsDesc` | Turn off Windows' own banners for an app if you only want the Island's |
+| `integrations.notificationsStay` | Keep the Island showing while notifications wait |
+| `integrations.notificationsStayDesc` | When the notch is set to auto-hide (Smart or Peek), it stays on screen until the drawer is empty, even over full-screen apps |
 
 ## Claude → Tabs
 
