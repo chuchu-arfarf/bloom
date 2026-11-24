@@ -119,7 +119,8 @@ fn focus_left_panel(app: &AppHandle, panel: isize) -> bool {
     if handle == 0 {
         return true;
     }
-    if handle == panel {
+    // The panel itself, or its other view (switching to Code).
+    if handle == panel || crate::claude::panel_hwnds(app).contains(&handle) {
         return false;
     }
     let mut process = 0u32;

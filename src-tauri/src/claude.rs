@@ -939,17 +939,35 @@ pub fn claude_show_view(app: AppHandle, view: String) {
     tauri::async_runtime::spawn_blocking(move || show_view(&app, view));
 }
 
-/// Hides the panel. `from_blur` is set when it closes because focus moved away.
-#[tauri::command]
-pub fn hide_claude_window(app: AppHandle, from_blur: Option<bool>) {
-    for window in panel_windows(&app) {
-        if window.is_visible().unwrap_or(false) && from_blur == Some(true) {
-            if let Ok(mut last) = LAST_BLUR_HIDE.lock() {
-                *last = Some(std::time::Instant::now());
-            }
-        }
+fn hide_panel_windows(app: &AppHandle) {
+    for window in panel_windows(app) {
         let _ = window.hide();
     }
+}
+
+/// Hides the panel. `from_blur` is set when it closes because focus moved away:
+/// then it waits a moment and stays open if focus only moved to the panel's
+/// other view (switching between claude.ai and Code).
+#[tauri::command]
+pub fn hide_claude_window(app: AppHandle, from_blur: Option<bool>) {
+    if from_blur != Some(true) {
+        hide_panel_windows(&app);
+        return;
+    }
+    if panel_windows(&app)
+        .iter()
+        .any(|w| w.is_visible().unwrap_or(false))
+    {
+        if let Ok(mut last) = LAST_BLUR_HIDE.lock() {
+            *last = Some(std::time::Instant::now());
+        }
+    }
+    std::thread::spawn(move || {
+        std::thread::sleep(Duration::from_millis(150));
+        if !panel_in_front(&app) {
+            hide_panel_windows(&app);
+        }
+    });
 }
 
 /// The panel windows' handles, for matching them to the dock's Claude icon.
